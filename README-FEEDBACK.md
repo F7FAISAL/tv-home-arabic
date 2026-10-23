@@ -113,4 +113,6 @@ com.gathin.tvhome. This test upgrades it in place from this repository by follow
    3.2 first switched the key services off and on (1.5 s pause) before waiting for them; the ADB test hid that. An app
    cannot remove another app's task, and killing its process only makes Android cold-start it in the same place.
    **3.3** waits up to 2 s for the key service to rebind by itself and brings Home back at once, switching the
-   services off and on only when they don't come back.
+   services off and on only when they don't come back. **Real in-app update to 3.3:** the other app showed for about
+   2.5 s (01:33:45.68 → Home 01:33:48.21); about 2 s of that is Android delivering MY_PACKAGE_REPLACED, and the
+   launcher's part is 0.37 s. Accepted by the owner.
