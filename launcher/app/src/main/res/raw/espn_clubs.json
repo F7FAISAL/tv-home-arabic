@@ -1,0 +1,983 @@
+{
+ "source": "ESPN public site API, team ids per league (built from res/raw/clubs.json)",
+ "clubs": {
+  "137855": {
+   "espn": "21833",
+   "name": "Abha",
+   "codes": [
+    "ksa.1",
+    "afc.champions",
+    "afc.cup",
+    "ksa.kings.cup"
+   ]
+  },
+  "137721": {
+   "espn": "8346",
+   "name": "Al-Ahli",
+   "codes": [
+    "ksa.1",
+    "afc.champions",
+    "afc.cup",
+    "ksa.kings.cup"
+   ]
+  },
+  "152917": {
+   "espn": "131746",
+   "name": "Al-Diriyah",
+   "codes": [
+    "ksa.1",
+    "afc.champions",
+    "afc.cup",
+    "ksa.kings.cup"
+   ]
+  },
+  "136017": {
+   "espn": "8363",
+   "name": "Al-Ettifaq",
+   "codes": [
+    "ksa.1",
+    "afc.champions",
+    "afc.cup",
+    "ksa.kings.cup"
+   ]
+  },
+  "136021": {
+   "espn": "21446",
+   "name": "Al-Faisaly",
+   "codes": [
+    "ksa.1",
+    "afc.champions",
+    "afc.cup",
+    "ksa.kings.cup"
+   ]
+  },
+  "136011": {
+   "espn": "13033",
+   "name": "Al-Fateh",
+   "codes": [
+    "ksa.1",
+    "afc.champions",
+    "afc.cup",
+    "ksa.kings.cup"
+   ]
+  },
+  "136014": {
+   "espn": "21827",
+   "name": "Al-Fayha",
+   "codes": [
+    "ksa.1",
+    "afc.champions",
+    "afc.cup",
+    "ksa.kings.cup"
+   ]
+  },
+  "136200": {
+   "espn": "21964",
+   "name": "Al-Hazem",
+   "codes": [
+    "ksa.1",
+    "afc.champions",
+    "afc.cup",
+    "ksa.kings.cup"
+   ]
+  },
+  "136013": {
+   "espn": "929",
+   "name": "Al-Hilal",
+   "codes": [
+    "ksa.1",
+    "afc.champions",
+    "afc.cup",
+    "ksa.kings.cup"
+   ]
+  },
+  "136018": {
+   "espn": "2276",
+   "name": "Al-Ittihad",
+   "codes": [
+    "ksa.1",
+    "afc.champions",
+    "afc.cup",
+    "ksa.kings.cup"
+   ]
+  },
+  "139080": {
+   "espn": "21829",
+   "name": "Al-Khaleej",
+   "codes": [
+    "ksa.1",
+    "afc.champions",
+    "afc.cup",
+    "ksa.kings.cup"
+   ]
+  },
+  "149112": {
+   "espn": "22028",
+   "name": "Al-Kholood",
+   "codes": [
+    "ksa.1",
+    "afc.champions",
+    "afc.cup",
+    "ksa.kings.cup"
+   ]
+  },
+  "136022": {
+   "espn": "817",
+   "name": "Al-Nassr",
+   "codes": [
+    "ksa.1",
+    "afc.champions",
+    "afc.cup",
+    "ksa.kings.cup"
+   ]
+  },
+  "136015": {
+   "espn": "22022",
+   "name": "Al-Qadsiah",
+   "codes": [
+    "ksa.1",
+    "afc.champions",
+    "afc.cup",
+    "ksa.kings.cup"
+   ]
+  },
+  "147445": {
+   "espn": "21965",
+   "name": "Al-Riyadh",
+   "codes": [
+    "ksa.1",
+    "afc.champions",
+    "afc.cup",
+    "ksa.kings.cup"
+   ]
+  },
+  "136020": {
+   "espn": "793",
+   "name": "Al-Shabab",
+   "codes": [
+    "ksa.1",
+    "afc.champions",
+    "afc.cup",
+    "ksa.kings.cup"
+   ]
+  },
+  "136012": {
+   "espn": "18459",
+   "name": "Al-Taawoun",
+   "codes": [
+    "ksa.1",
+    "afc.champions",
+    "afc.cup",
+    "ksa.kings.cup"
+   ]
+  },
+  "150637": {
+   "espn": "130899",
+   "name": "Neom",
+   "codes": [
+    "ksa.1",
+    "afc.champions",
+    "afc.cup",
+    "ksa.kings.cup"
+   ]
+  },
+  "133604": {
+   "espn": "359",
+   "name": "Arsenal",
+   "codes": [
+    "eng.1",
+    "uefa.champions"
+   ]
+  },
+  "133601": {
+   "espn": "362",
+   "name": "Aston Villa",
+   "codes": [
+    "eng.1",
+    "uefa.champions"
+   ]
+  },
+  "134301": {
+   "espn": "349",
+   "name": "Bournemouth",
+   "codes": [
+    "eng.1"
+   ]
+  },
+  "134355": {
+   "espn": "337",
+   "name": "Brentford",
+   "codes": [
+    "eng.1"
+   ]
+  },
+  "133619": {
+   "espn": "331",
+   "name": "Brighton and Hove Albion",
+   "codes": [
+    "eng.1"
+   ]
+  },
+  "133610": {
+   "espn": "363",
+   "name": "Chelsea",
+   "codes": [
+    "eng.1"
+   ]
+  },
+  "133625": {
+   "espn": "388",
+   "name": "Coventry City",
+   "codes": [
+    "eng.1"
+   ]
+  },
+  "133632": {
+   "espn": "384",
+   "name": "Crystal Palace",
+   "codes": [
+    "eng.1"
+   ]
+  },
+  "133615": {
+   "espn": "368",
+   "name": "Everton",
+   "codes": [
+    "eng.1"
+   ]
+  },
+  "133600": {
+   "espn": "370",
+   "name": "Fulham",
+   "codes": [
+    "eng.1"
+   ]
+  },
+  "133617": {
+   "espn": "306",
+   "name": "Hull City",
+   "codes": [
+    "eng.1"
+   ]
+  },
+  "133622": {
+   "espn": "373",
+   "name": "Ipswich Town",
+   "codes": [
+    "eng.1"
+   ]
+  },
+  "133635": {
+   "espn": "357",
+   "name": "Leeds United",
+   "codes": [
+    "eng.1"
+   ]
+  },
+  "133602": {
+   "espn": "364",
+   "name": "Liverpool",
+   "codes": [
+    "eng.1",
+    "uefa.champions"
+   ]
+  },
+  "133613": {
+   "espn": "382",
+   "name": "Manchester City",
+   "codes": [
+    "eng.1",
+    "uefa.champions"
+   ]
+  },
+  "133612": {
+   "espn": "360",
+   "name": "Manchester United",
+   "codes": [
+    "eng.1",
+    "uefa.champions"
+   ]
+  },
+  "134777": {
+   "espn": "361",
+   "name": "Newcastle United",
+   "codes": [
+    "eng.1"
+   ]
+  },
+  "133720": {
+   "espn": "393",
+   "name": "Nottingham Forest",
+   "codes": [
+    "eng.1"
+   ]
+  },
+  "133603": {
+   "espn": "366",
+   "name": "Sunderland",
+   "codes": [
+    "eng.1"
+   ]
+  },
+  "133616": {
+   "espn": "367",
+   "name": "Tottenham Hotspur",
+   "codes": [
+    "eng.1"
+   ]
+  },
+  "133727": {
+   "espn": "93",
+   "name": "Athletic Bilbao",
+   "codes": [
+    "esp.1"
+   ]
+  },
+  "133729": {
+   "espn": "1068",
+   "name": "Atlético Madrid",
+   "codes": [
+    "esp.1",
+    "uefa.champions"
+   ]
+  },
+  "133739": {
+   "espn": "83",
+   "name": "Barcelona",
+   "codes": [
+    "esp.1",
+    "uefa.champions"
+   ]
+  },
+  "133937": {
+   "espn": "85",
+   "name": "Celta Vigo",
+   "codes": [
+    "esp.1"
+   ]
+  },
+  "134221": {
+   "espn": "96",
+   "name": "Deportivo Alavés",
+   "codes": [
+    "esp.1"
+   ]
+  },
+  "133816": {
+   "espn": "90",
+   "name": "Deportivo de A Coruña",
+   "codes": [
+    "esp.1"
+   ]
+  },
+  "134384": {
+   "espn": "3751",
+   "name": "Elche",
+   "codes": [
+    "esp.1"
+   ]
+  },
+  "133734": {
+   "espn": "88",
+   "name": "Espanyol",
+   "codes": [
+    "esp.1"
+   ]
+  },
+  "133731": {
+   "espn": "2922",
+   "name": "Getafe",
+   "codes": [
+    "esp.1"
+   ]
+  },
+  "133732": {
+   "espn": "1538",
+   "name": "Levante",
+   "codes": [
+    "esp.1"
+   ]
+  },
+  "133736": {
+   "espn": "99",
+   "name": "Málaga",
+   "codes": [
+    "esp.1"
+   ]
+  },
+  "133730": {
+   "espn": "97",
+   "name": "Osasuna",
+   "codes": [
+    "esp.1"
+   ]
+  },
+  "133726": {
+   "espn": "87",
+   "name": "Racing de Santander",
+   "codes": [
+    "esp.1"
+   ]
+  },
+  "133728": {
+   "espn": "101",
+   "name": "Rayo Vallecano",
+   "codes": [
+    "esp.1"
+   ]
+  },
+  "133722": {
+   "espn": "244",
+   "name": "Real Betis",
+   "codes": [
+    "esp.1",
+    "uefa.champions"
+   ]
+  },
+  "133738": {
+   "espn": "86",
+   "name": "Real Madrid",
+   "codes": [
+    "esp.1",
+    "uefa.champions"
+   ]
+  },
+  "133724": {
+   "espn": "89",
+   "name": "Real Sociedad",
+   "codes": [
+    "esp.1"
+   ]
+  },
+  "133735": {
+   "espn": "243",
+   "name": "Sevilla",
+   "codes": [
+    "esp.1"
+   ]
+  },
+  "133725": {
+   "espn": "94",
+   "name": "Valencia",
+   "codes": [
+    "esp.1"
+   ]
+  },
+  "133740": {
+   "espn": "102",
+   "name": "Villarreal",
+   "codes": [
+    "esp.1",
+    "uefa.champions"
+   ]
+  },
+  "133667": {
+   "espn": "103",
+   "name": "AC Milan",
+   "codes": [
+    "ita.1"
+   ]
+  },
+  "134782": {
+   "espn": "105",
+   "name": "Atalanta",
+   "codes": [
+    "ita.1"
+   ]
+  },
+  "134781": {
+   "espn": "107",
+   "name": "Bologna",
+   "codes": [
+    "ita.1"
+   ]
+  },
+  "134783": {
+   "espn": "2925",
+   "name": "Cagliari",
+   "codes": [
+    "ita.1"
+   ]
+  },
+  "134243": {
+   "espn": "2572",
+   "name": "Como",
+   "codes": [
+    "ita.1",
+    "uefa.champions"
+   ]
+  },
+  "133674": {
+   "espn": "109",
+   "name": "Fiorentina",
+   "codes": [
+    "ita.1"
+   ]
+  },
+  "133818": {
+   "espn": "4057",
+   "name": "Frosinone",
+   "codes": [
+    "ita.1"
+   ]
+  },
+  "133675": {
+   "espn": "3263",
+   "name": "Genoa",
+   "codes": [
+    "ita.1"
+   ]
+  },
+  "133681": {
+   "espn": "110",
+   "name": "Inter Milan",
+   "codes": [
+    "ita.1",
+    "uefa.champions"
+   ]
+  },
+  "133676": {
+   "espn": "111",
+   "name": "Juventus",
+   "codes": [
+    "ita.1"
+   ]
+  },
+  "133668": {
+   "espn": "112",
+   "name": "Lazio",
+   "codes": [
+    "ita.1"
+   ]
+  },
+  "133678": {
+   "espn": "113",
+   "name": "Lecce",
+   "codes": [
+    "ita.1"
+   ]
+  },
+  "134270": {
+   "espn": "4007",
+   "name": "Monza",
+   "codes": [
+    "ita.1"
+   ]
+  },
+  "133670": {
+   "espn": "114",
+   "name": "Napoli",
+   "codes": [
+    "ita.1",
+    "uefa.champions"
+   ]
+  },
+  "135728": {
+   "espn": "115",
+   "name": "Parma",
+   "codes": [
+    "ita.1"
+   ]
+  },
+  "133682": {
+   "espn": "104",
+   "name": "Roma",
+   "codes": [
+    "ita.1",
+    "uefa.champions"
+   ]
+  },
+  "133701": {
+   "espn": "3997",
+   "name": "Sassuolo",
+   "codes": [
+    "ita.1"
+   ]
+  },
+  "133687": {
+   "espn": "239",
+   "name": "Torino",
+   "codes": [
+    "ita.1"
+   ]
+  },
+  "133679": {
+   "espn": "118",
+   "name": "Udinese",
+   "codes": [
+    "ita.1"
+   ]
+  },
+  "134234": {
+   "espn": "17530",
+   "name": "Venezia",
+   "codes": [
+    "ita.1"
+   ]
+  },
+  "133652": {
+   "espn": "3841",
+   "name": "Augsburg",
+   "codes": [
+    "ger.1"
+   ]
+  },
+  "133666": {
+   "espn": "131",
+   "name": "Bayer Leverkusen",
+   "codes": [
+    "ger.1"
+   ]
+  },
+  "133664": {
+   "espn": "132",
+   "name": "Bayern Munich",
+   "codes": [
+    "ger.1",
+    "uefa.champions"
+   ]
+  },
+  "133650": {
+   "espn": "124",
+   "name": "Borussia Dortmund",
+   "codes": [
+    "ger.1",
+    "uefa.champions"
+   ]
+  },
+  "134779": {
+   "espn": "268",
+   "name": "Borussia Mönchengladbach",
+   "codes": [
+    "ger.1"
+   ]
+  },
+  "133814": {
+   "espn": "125",
+   "name": "Eintracht Frankfurt",
+   "codes": [
+    "ger.1"
+   ]
+  },
+  "138411": {
+   "espn": "10388",
+   "name": "Elversberg",
+   "codes": [
+    "ger.1"
+   ]
+  },
+  "133653": {
+   "espn": "126",
+   "name": "Freiburg",
+   "codes": [
+    "ger.1"
+   ]
+  },
+  "133651": {
+   "espn": "127",
+   "name": "Hamburg",
+   "codes": [
+    "ger.1"
+   ]
+  },
+  "133657": {
+   "espn": "7911",
+   "name": "Hoffenheim",
+   "codes": [
+    "ger.1"
+   ]
+  },
+  "133654": {
+   "espn": "122",
+   "name": "Köln",
+   "codes": [
+    "ger.1"
+   ]
+  },
+  "133665": {
+   "espn": "2950",
+   "name": "Mainz",
+   "codes": [
+    "ger.1"
+   ]
+  },
+  "134551": {
+   "espn": "3307",
+   "name": "Paderborn",
+   "codes": [
+    "ger.1"
+   ]
+  },
+  "134695": {
+   "espn": "11420",
+   "name": "RB Leipzig",
+   "codes": [
+    "ger.1",
+    "uefa.champions"
+   ]
+  },
+  "133661": {
+   "espn": "133",
+   "name": "Schalke 04",
+   "codes": [
+    "ger.1"
+   ]
+  },
+  "133660": {
+   "espn": "134",
+   "name": "Stuttgart",
+   "codes": [
+    "ger.1",
+    "uefa.champions"
+   ]
+  },
+  "134690": {
+   "espn": "598",
+   "name": "Union Berlin",
+   "codes": [
+    "ger.1"
+   ]
+  },
+  "133662": {
+   "espn": "137",
+   "name": "Werder Bremen",
+   "codes": [
+    "ger.1"
+   ]
+  },
+  "134709": {
+   "espn": "7868",
+   "name": "Angers",
+   "codes": [
+    "fra.1"
+   ]
+  },
+  "134788": {
+   "espn": "172",
+   "name": "Auxerre",
+   "codes": [
+    "fra.1"
+   ]
+  },
+  "133704": {
+   "espn": "6997",
+   "name": "Brest",
+   "codes": [
+    "fra.1"
+   ]
+  },
+  "133862": {
+   "espn": "3236",
+   "name": "Le Havre",
+   "codes": [
+    "fra.1"
+   ]
+  },
+  "133848": {
+   "espn": "2697",
+   "name": "Le Mans",
+   "codes": [
+    "fra.1"
+   ]
+  },
+  "133822": {
+   "espn": "175",
+   "name": "Lens",
+   "codes": [
+    "fra.1",
+    "uefa.champions"
+   ]
+  },
+  "133711": {
+   "espn": "166",
+   "name": "Lille",
+   "codes": [
+    "fra.1",
+    "uefa.champions"
+   ]
+  },
+  "133715": {
+   "espn": "273",
+   "name": "Lorient",
+   "codes": [
+    "fra.1"
+   ]
+  },
+  "133713": {
+   "espn": "167",
+   "name": "Lyon",
+   "codes": [
+    "fra.1"
+   ]
+  },
+  "133707": {
+   "espn": "176",
+   "name": "Marseille",
+   "codes": [
+    "fra.1"
+   ]
+  },
+  "133823": {
+   "espn": "174",
+   "name": "Monaco",
+   "codes": [
+    "fra.1"
+   ]
+  },
+  "133712": {
+   "espn": "2502",
+   "name": "Nice",
+   "codes": [
+    "fra.1"
+   ]
+  },
+  "135465": {
+   "espn": "6851",
+   "name": "Paris FC",
+   "codes": [
+    "fra.1"
+   ]
+  },
+  "133714": {
+   "espn": "160",
+   "name": "Paris Saint-Germain",
+   "codes": [
+    "fra.1",
+    "uefa.champions"
+   ]
+  },
+  "133719": {
+   "espn": "169",
+   "name": "Rennes",
+   "codes": [
+    "fra.1"
+   ]
+  },
+  "133882": {
+   "espn": "180",
+   "name": "Strasbourg",
+   "codes": [
+    "fra.1"
+   ]
+  },
+  "133703": {
+   "espn": "179",
+   "name": "Toulouse",
+   "codes": [
+    "fra.1"
+   ]
+  },
+  "134789": {
+   "espn": "170",
+   "name": "Troyes",
+   "codes": [
+    "fra.1"
+   ]
+  },
+  "133753": {
+   "espn": "887",
+   "name": "AEK Athens",
+   "codes": [
+    "uefa.champions"
+   ]
+  },
+  "135497": {
+   "espn": "2980",
+   "name": "Bodø/Glimt",
+   "codes": [
+    "uefa.champions"
+   ]
+  },
+  "133789": {
+   "espn": "570",
+   "name": "Club Brugge",
+   "codes": [
+    "uefa.champions"
+   ]
+  },
+  "133807": {
+   "espn": "436",
+   "name": "Fenerbahçe",
+   "codes": [
+    "uefa.champions"
+   ]
+  },
+  "133758": {
+   "espn": "142",
+   "name": "Feyenoord",
+   "codes": [
+    "uefa.champions"
+   ]
+  },
+  "133804": {
+   "espn": "432",
+   "name": "Galatasaray",
+   "codes": [
+    "uefa.champions"
+   ]
+  },
+  "137261": {
+   "espn": "4411",
+   "name": "LASK",
+   "codes": [
+    "uefa.champions"
+   ]
+  },
+  "133768": {
+   "espn": "148",
+   "name": "PSV Eindhoven",
+   "codes": [
+    "uefa.champions"
+   ]
+  },
+  "134114": {
+   "espn": "437",
+   "name": "Porto",
+   "codes": [
+    "uefa.champions"
+   ]
+  },
+  "138341": {
+   "espn": "21922",
+   "name": "Sabah Baku",
+   "codes": [
+    "uefa.champions"
+   ]
+  },
+  "134126": {
+   "espn": "493",
+   "name": "Shakhtar Donetsk",
+   "codes": [
+    "uefa.champions"
+   ]
+  },
+  "136036": {
+   "espn": "494",
+   "name": "Slavia Prague",
+   "codes": [
+    "uefa.champions"
+   ]
+  },
+  "134090": {
+   "espn": "521",
+   "name": "Slovan Bratislava",
+   "codes": [
+    "uefa.champions"
+   ]
+  },
+  "135708": {
+   "espn": "2250",
+   "name": "Sporting CP",
+   "codes": [
+    "uefa.champions"
+   ]
+  },
+  "134570": {
+   "espn": "510",
+   "name": "Viking",
+   "codes": [
+    "uefa.champions"
+   ]
+  }
+ }
+}

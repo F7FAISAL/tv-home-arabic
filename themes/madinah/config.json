@@ -1,0 +1,47 @@
+{
+  "custom_home": true,
+  "city": "المدينة المنورة",
+  "wallpaper": true,
+  "wallpaper_rotation_minutes": 60,
+  "bundle_gallery": true,
+  "wallpaper_gallery_url": "https://raw.githubusercontent.com/F7FAISAL/tv-home-arabic/main/wallpapers.json",
+  "usb_wallpapers": true,
+  "show_prayer": true,
+  "show_iqama": true,
+  "iqama_minutes": {
+    "fajr": 25,
+    "dhuhr": 20,
+    "asr": 20,
+    "maghrib": 10,
+    "isha": 20
+  },
+  "show_ramadan": true,
+  "show_match": true,
+  "teams": [
+    "Barcelona"
+  ],
+  "match_rotate_seconds": 8,
+  "font": "plex",
+  "digits": "latin",
+  "sizes": {
+    "city": 17,
+    "weather": 20,
+    "clock": 156,
+    "dates": 19,
+    "label": 13,
+    "value": 29,
+    "sub": 13,
+    "pill": 13
+  },
+  "screensaver_sizes": {
+    "city": 14.5,
+    "weather": 17,
+    "clock": 96,
+    "dates": 15,
+    "label": 11,
+    "value": 21,
+    "sub": 11,
+    "pill": 13
+  },
+  "screensaver_shift_minutes": 3
+}

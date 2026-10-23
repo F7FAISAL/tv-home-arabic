@@ -1,0 +1,65 @@
+{
+  "version": 1,
+  "files": [
+    {
+      "file": "wallpapers/01.jpg",
+      "sha": "22dd3ebc1a0d8cb7",
+      "bytes": 199822
+    },
+    {
+      "file": "wallpapers/02.jpg",
+      "sha": "d3c6981cbc6e67de",
+      "bytes": 271189
+    },
+    {
+      "file": "wallpapers/03.jpg",
+      "sha": "6f55e236a3a38355",
+      "bytes": 451622
+    },
+    {
+      "file": "wallpapers/04.jpg",
+      "sha": "610350faf57f77c5",
+      "bytes": 426396
+    },
+    {
+      "file": "wallpapers/05.jpg",
+      "sha": "5135a2ca959f4cba",
+      "bytes": 462355
+    },
+    {
+      "file": "wallpapers/06.jpg",
+      "sha": "cfa9b34580f47170",
+      "bytes": 434512
+    },
+    {
+      "file": "wallpapers/07.jpg",
+      "sha": "666c560af89ba699",
+      "bytes": 501200
+    },
+    {
+      "file": "wallpapers/08.jpg",
+      "sha": "95da3603c6f372c3",
+      "bytes": 492447
+    },
+    {
+      "file": "wallpapers/09.jpg",
+      "sha": "86c8e645c135ad8d",
+      "bytes": 449680
+    },
+    {
+      "file": "wallpapers/10.jpg",
+      "sha": "696fddca8c58a1a6",
+      "bytes": 500106
+    },
+    {
+      "file": "wallpapers/11.jpg",
+      "sha": "3b6885fd4f3757a6",
+      "bytes": 289870
+    },
+    {
+      "file": "wallpapers/12.jpg",
+      "sha": "27cc43d60d89170d",
+      "bytes": 381607
+    }
+  ]
+}

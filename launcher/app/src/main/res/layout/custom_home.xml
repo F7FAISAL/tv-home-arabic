@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Clean Arabic home view (custom_home), over the wallpaper and under the dock: MainActivity adds it above the
+     sky, and the screensaver (dream_custom) shows it on its own. HomeScene fills it once a minute. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/customHome"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipChildren="false"
+    android:importantForAccessibility="no">
+
+    <View
+        android:id="@+id/customScrim"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/custom_scrim" />
+
+    <!-- Everything that fades out under the dock and drifts in the screensaver. -->
+    <FrameLayout
+        android:id="@+id/customContent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipChildren="false">
+
+        <!-- Top left: the city (HomeScene), and the current weather under it, one block: both start at the right
+             edge (Arabic's start), and HomeScene keeps the weather line no wider than the city's name. -->
+        <LinearLayout
+            android:id="@+id/customTopLeft"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|left"
+            android:layout_marginLeft="36dp"
+            android:layout_marginTop="26dp"
+            android:orientation="vertical"
+            android:gravity="right">
+
+            <TextView
+                android:id="@+id/customGreeting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                            android:singleLine="true"
+                android:textColor="#FFFFFFFF"
+                android:textSize="17sp"
+                android:includeFontPadding="false"
+                android:shadowColor="#66000000"
+                android:shadowRadius="8" />
+    
+            <!-- Icon, temperature and condition (WeatherFeed); gone when offline. Read right to left. -->
+            <LinearLayout
+                android:id="@+id/weatherRow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/weatherCondition"
+                    style="@style/CustomText.Sub"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginRight="14dp"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/weatherTemp"
+                    style="@style/CustomText.Value"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginRight="12dp"
+                    android:textDirection="ltr"
+                    android:textSize="26sp" />
+
+                <ImageView
+                    android:id="@+id/weatherIcon"
+                    android:layout_width="34dp"
+                    android:layout_height="34dp"
+                    android:importantForAccessibility="no" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Visual right: two round glass buttons of one size. The right one (customPill) opens the launcher menu
+             (the Settings pill's long press); the one left of it starts the screensaver. HomeScene sizes both from
+             the theme's "pill" size; the screensaver hides the row. -->
+        <LinearLayout
+            android:id="@+id/customButtons"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|right"
+            android:layout_marginRight="40dp"
+            android:layout_marginTop="26dp"
+            android:layoutDirection="ltr"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/customDreamButton"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginRight="12dp"
+                android:padding="10dp"
+                android:background="@drawable/custom_pill_bg"
+                android:src="@drawable/ic_custom_screensaver"
+                android:tint="@drawable/pill_text"
+                android:contentDescription="@string/custom_screensaver"
+                android:focusable="true"
+                android:clickable="true" />
+
+            <ImageView
+                android:id="@+id/customPill"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:padding="10dp"
+                android:background="@drawable/custom_pill_bg"
+                android:src="@drawable/ic_custom_menu"
+                android:tint="@drawable/pill_text"
+                android:contentDescription="@string/launcher_settings"
+                android:focusable="true"
+                android:clickable="true" />
+        </LinearLayout>
+
+        <!-- The clock on the right, vertically centred: «م» at the baseline to the left of the digits. HomeScene sets the
+             font and both sizes from the theme (font, clock_size). -->
+        <!-- Right side, vertically centred: the clock, the dates under it. -->
+        <LinearLayout
+            android:id="@+id/customClockBlock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right|center_vertical"
+            android:layout_marginRight="64dp"
+            android:layout_marginBottom="56dp"
+            android:orientation="vertical"
+            android:gravity="right">
+
+
+        <LinearLayout
+            android:id="@+id/customClock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:baselineAligned="true">
+
+            <TextView
+                android:id="@+id/customAmPm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="18dp"
+                android:includeFontPadding="false"
+                android:textColor="#D9FFFFFF"
+                android:textSize="37sp"
+                android:fontFamily="@font/plex_arabic_regular"
+                android:shadowColor="#40000000"
+                android:shadowRadius="10" />
+
+            <TextView
+                android:id="@+id/customTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:textColor="#FFFFFFFF"
+                android:textSize="156sp"
+                android:fontFamily="@font/plex_arabic_regular"
+                android:letterSpacing="-0.01"
+                android:shadowColor="#40000000"
+                android:shadowRadius="16" />
+        </LinearLayout>
+
+            <!-- Under the clock: the day, the Hijri date (Umm al-Qura) and the Gregorian date. -->
+            <TextView
+                android:id="@+id/customDates"
+                style="@style/CustomText.Sub"
+                android:layout_marginTop="6dp"
+                android:layout_marginRight="8dp"
+                android:textSize="19sp" />
+        </LinearLayout>
+
+        <!-- Bottom info row, read right to left: next prayer, Ramadan, next match. Blocks with nothing to say are
+             gone, together with their separator. -->
+        <LinearLayout
+            android:id="@+id/customInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|right"
+            android:layout_marginRight="64dp"
+            android:layout_marginBottom="58dp"
+            android:orientation="horizontal"
+            android:gravity="bottom">
+
+            <LinearLayout
+                android:id="@+id/matchBlock"
+                style="@style/CustomBlock">
+
+                <TextView
+                    android:id="@+id/matchLabel"
+                    style="@style/CustomText.Label" />
+
+                <TextView
+                    android:id="@+id/matchValue"
+                    style="@style/CustomText.Value" />
+
+                <TextView
+                    android:id="@+id/matchSub"
+                    style="@style/CustomText.Sub" />
+            </LinearLayout>
+
+            <View
+                android:id="@+id/matchSeparator"
+                style="@style/CustomSeparator" />
+
+            <LinearLayout
+                android:id="@+id/ramadanBlock"
+                style="@style/CustomBlock">
+
+                <TextView
+                    android:id="@+id/ramadanLabel"
+                    style="@style/CustomText.Label" />
+
+                <TextView
+                    android:id="@+id/ramadanValue"
+                    style="@style/CustomText.Value" />
+
+                <TextView
+                    android:id="@+id/ramadanSub"
+                    style="@style/CustomText.Sub" />
+            </LinearLayout>
+
+            <View
+                android:id="@+id/ramadanSeparator"
+                style="@style/CustomSeparator" />
+
+            <LinearLayout
+                android:id="@+id/prayerBlock"
+                style="@style/CustomBlock">
+
+                <TextView
+                    android:id="@+id/prayerLabel"
+                    style="@style/CustomText.Label"
+                    android:text="@string/custom_next_prayer" />
+
+                <!-- The time to the left of the name, as it reads in Arabic: «الفجر  4:36 ص». -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:baselineAligned="true">
+
+                    <TextView
+                        android:id="@+id/prayerTime"
+                        style="@style/CustomText.Value"
+                        android:layout_marginRight="14dp"
+                        android:fontFamily="@font/plex_arabic_regular" />
+
+                    <TextView
+                        android:id="@+id/prayerName"
+                        style="@style/CustomText.Value" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/prayerSub"
+                    style="@style/CustomText.Sub" />
+            </LinearLayout>
+        </LinearLayout>
+
+    </FrameLayout>
+</FrameLayout>

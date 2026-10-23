@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The TV menu and its lists, matching launcher settings: white at 14% over a dark base (darker than the settings
+     panel, since Home's own text is behind it and Android 11 cannot blur), rounded, a fine white edge. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#D9101216" />
+            <corners android:radius="20dp" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#24FFFFFF" />
+            <stroke android:width="1dp" android:color="#40FFFFFF" />
+            <corners android:radius="20dp" />
+        </shape>
+    </item>
+</layer-list>

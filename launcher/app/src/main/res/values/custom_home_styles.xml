@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Text styles of the clean Arabic home view (layout/custom_home.xml). Arabic text is right to left and right
+     aligned inside each block; the launcher itself lays out left to right (no supportsRtl). -->
+<resources>
+    <style name="CustomText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textDirection">rtl</item>
+        <item name="android:gravity">right</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:shadowColor">#66000000</item>
+        <item name="android:shadowRadius">8</item>
+        <item name="android:shadowDy">1</item>
+    </style>
+
+    <!-- «الصلاة القادمة»: small grey label over each block. -->
+    <style name="CustomText.Label">
+        <item name="android:textColor">#B3FFFFFF</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:fontFamily">@font/plex_arabic_regular</item>
+    </style>
+
+    <!-- The block's headline value: «الفجر», «111 يوماً», «برشلونة × ريال مدريد». -->
+    <style name="CustomText.Value">
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:textColor">#FFFFFFFF</item>
+        <item name="android:textSize">29sp</item>
+        <item name="android:fontFamily">@font/plex_arabic_bold</item>
+    </style>
+
+    <!-- The small line under it: «بعد 9 ساعات و38 دقيقة». -->
+    <style name="CustomText.Sub">
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:textColor">#D9FFFFFF</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:fontFamily">@font/plex_arabic_regular</item>
+    </style>
+
+    <style name="CustomBlock">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:gravity">right</item>
+    </style>
+
+    <style name="CustomSeparator">
+        <item name="android:layout_width">1dp</item>
+        <item name="android:layout_height">72dp</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:layout_marginLeft">40dp</item>
+        <item name="android:layout_marginRight">40dp</item>
+        <item name="android:background">#33FFFFFF</item>
+    </style>
+</resources>

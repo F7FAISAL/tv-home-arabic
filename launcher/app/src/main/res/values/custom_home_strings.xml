@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The clean home view is Arabic in every TV language. -->
+<resources>
+    <string name="custom_next_prayer" translatable="false">الصلاة القادمة</string>
+    <string name="custom_ramadan" translatable="false">رمضان</string>
+    <string name="custom_eid" translatable="false">العيد</string>
+    <!-- %s is the team's Arabic name: «مباراة برشلونة القادمة». -->
+    <string name="custom_next_match" translatable="false">مباراة %s القادمة</string>
+    <string name="custom_ramadan_starts" translatable="false">يبدأ %s تقريباً</string>
+    <string name="custom_ramadan_day" translatable="false">اليوم %d من رمضان</string>
+    <string name="custom_ramadan_kareem" translatable="false">رمضان كريم</string>
+    <string name="custom_eid_mubarak" translatable="false">عيد مبارك</string>
+    <string name="custom_eid_fitr" translatable="false">عيد الفطر</string>
+    <string name="custom_eid_adha" translatable="false">عيد الأضحى</string>
+    <string name="custom_location" translatable="false">الموقع</string>
+    <string name="custom_teams" translatable="false">أنديتي</string>
+    <string name="custom_digits" translatable="false">الأرقام</string>
+    <string name="custom_show" translatable="false">إظهار وإخفاء</string>
+    <string name="custom_screensaver" translatable="false">شاشة التوقف</string>
+    <!-- Hold OK on a tile: its menu. -->
+    <string name="tile_move" translatable="false">تحريك</string>
+    <string name="tile_dock_add" translatable="false">إضافة للشريط</string>
+    <string name="tile_dock_remove" translatable="false">إزالة من الشريط</string>
+    <string name="tile_hide" translatable="false">إخفاء</string>
+    <string name="tile_app_info" translatable="false">معلومات التطبيق</string>
+    <string name="tile_move_hint" translatable="false">الأسهم للتحريك، موافق للتثبيت، رجوع للإلغاء</string>
+    <string name="tile_dock_replace" translatable="false">الشريط ممتلئ: اختر التطبيق الذي يحلّ محلّه</string>
+    <string name="tile_hidden" translatable="false">أُخفي %s. يعود من إعدادات المشغّل ← التطبيقات المخفية</string>
+    <string name="hidden_apps" translatable="false">التطبيقات المخفية</string>
+    <string name="hidden_apps_none" translatable="false">لا توجد تطبيقات مخفية</string>
+    <!-- Read-only lines at the foot of the pill menu, one per chosen club: where its shown match came from
+         (TheSportsDB, or ESPN as the fallback) and when that source last answered. -->
+    <string name="custom_match_source" translatable="false">مصدر مباراة %1$s: %2$s · آخر تحديث: %3$s</string>
+    <string name="custom_match_source_none" translatable="false">لا مباراة قادمة</string>
+    <string name="custom_match_source_never" translatable="false">لم يتم بعد</string>
+    <string name="custom_weather_source" translatable="false">مصدر الطقس: Open-Meteo.com (CC BY 4.0)</string>
+    <string name="custom_show_prayer" translatable="false">الصلاة</string>
+    <string name="custom_show_ramadan" translatable="false">رمضان</string>
+    <string name="custom_show_match" translatable="false">المباريات</string>
+    <string name="custom_show_weather" translatable="false">الطقس</string>
+    <string name="custom_show_dates" translatable="false">التاريخ</string>
+    <string name="custom_show_iqama" translatable="false">الإقامة</string>
+    <string name="custom_iqama_times" translatable="false">أوقات الإقامة</string>
+    <!-- The prayer block between an adhan and its iqama: label, and «الإقامة بعد 12 دقيقة» under the iqama time. -->
+    <string name="custom_iqama_label" translatable="false">إقامة صلاة</string>
+    <string name="custom_iqama_in" translatable="false">الإقامة %s</string>
+    <!-- «أوقات الإقامة» list rows: «الفجر: 25 دقيقة». -->
+    <string name="custom_iqama_row" translatable="false">%1$s: %2$s</string>
+</resources>

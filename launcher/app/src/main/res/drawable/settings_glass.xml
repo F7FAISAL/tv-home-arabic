@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Launcher settings panel: soft white frosted glass, white at 14% over a light dark base, rounded, a fine edge.
+     SoftBackdrop draws the softened wallpaper behind it. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#4D000000" />
+            <corners android:radius="26dp" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#24FFFFFF" />
+            <stroke android:width="1dp" android:color="#40FFFFFF" />
+            <corners android:radius="26dp" />
+        </shape>
+    </item>
+</layer-list>
