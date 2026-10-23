@@ -70,8 +70,11 @@ WANT="$(python3 -I tools/release_cert.py --sha256)"
 GOT="$("$APKSIGNER" verify --print-certs "$OUT/$FILE" | sed -n 's/^Signer #1 certificate SHA-256 digest: //p')"
 [ "$GOT" = "$WANT" ] || die "signed with $GOT, not the release key $WANT"
 [ "$("$APKSIGNER" verify --print-certs "$OUT/$FILE" | grep -c '^Signer #[0-9]* certificate DN:')" = 1 ] || die "not exactly one signer"
-if unzip -l "$OUT/$FILE" | grep -qi 'thmanyah'; then die "the APK contains a Thmanyah file; it must never be published"; fi
-BADGE="$("$AAPT2" dump badging "$OUT/$FILE" | head -n 1)"
+LISTING="$(unzip -l "$OUT/$FILE")" || die "unzip could not list the APK"
+if grep -qi 'thmanyah' <<<"$LISTING"; then die "the APK contains a Thmanyah file; it must never be published"; fi
+# Whole output first: `| head -n 1` would close the pipe, and under pipefail aapt2's SIGPIPE would end the script.
+BADGE="$("$AAPT2" dump badging "$OUT/$FILE")" || die "aapt2 could not read the APK"
+BADGE="${BADGE%%$'\n'*}"
 case "$BADGE" in *"name='com.gathin.tvhome'"*"versionCode='$CODE'"*"versionName='$NAME'"*) ;; *) die "unexpected package line: $BADGE" ;; esac
 (cd "$OUT" && shasum -a 256 "$FILE" > "$FILE.sha256")
 SUM="$(cut -d' ' -f1 "$OUT/$FILE.sha256")"
