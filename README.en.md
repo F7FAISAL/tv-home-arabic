@@ -423,7 +423,7 @@ and a wallpaper.
 - Click **Settings** for the TV's own settings. Hold OK on it and choose **Launcher settings** to set 4, 5,
   6 or 7 apps per row, turn animations on or off, and opt into advanced effects (tile lift, icon zoom and
   smooth ambient-colour transitions; they may use more memory).
-- **Follow theme** clears the on-TV choices. Pushing or resetting a theme clears them too.
+- **Follow theme** clears the on-TV choices. Pushing or resetting a theme keeps them (launcher 3.0 and later).
 - **Change the default home:** Launcher settings and the optional Default-home tile
   (`show_home_settings_shortcut`) open Android's home picker. Choose the original launcher to stop using
   CleanYourTV as Home, or CleanYourTV to return. The original launcher must be enabled; if the install

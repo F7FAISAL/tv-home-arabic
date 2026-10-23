@@ -69,6 +69,9 @@ class DebloatPathsTest(unittest.TestCase):
         result = subprocess.run(
             ["bash", str(script_path), argument], cwd=cwd, env=env,
             capture_output=True, text=True,
+            # The fake TV client's catch-all is `cat`: with the runner's stdin left open (a background job, CI) a
+            # call that inherits it would wait forever.
+            stdin=subprocess.DEVNULL,
         )
         return result, capture
 

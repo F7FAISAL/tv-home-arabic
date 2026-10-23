@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
-"""Build launcher res/raw/espn_clubs.json: our TheSportsDB club id -> ESPN team id and the ESPN competitions to ask.
-Matching is by name against each ESPN league's team list; unmatched clubs are printed for a manual look.
+"""Build launcher res/raw/espn_clubs.json: our TheSportsDB club id -> ESPN team id. The launcher asks ESPN's
+all-competitions schedule for that id (EspnFallback), so no competition list is needed. Matching is by name against
+each ESPN league's team list (the Champions League's for clubs outside the six leagues); unmatched clubs are printed
+for a manual look.
 
     python3 tools/espn_clubs.py launcher/app/src/main/res/raw/clubs.json launcher/app/src/main/res/raw/espn_clubs.json
 """
@@ -12,7 +14,6 @@ import urllib.request
 CLUBS, OUT = sys.argv[1], sys.argv[2]
 LEAGUE_CODE = {"4668": "ksa.1", "4328": "eng.1", "4335": "esp.1", "4332": "ita.1", "4331": "ger.1", "4334": "fra.1",
                "4480": "uefa.champions"}
-SAUDI_EXTRA = ["afc.champions", "afc.cup", "ksa.kings.cup"]
 # tsdb id -> espn id, for names the matcher cannot pair or pairs wrongly (checked by hand against ESPN's lists)
 MANUAL = {"133738": "86",      # Real Madrid (the matcher drops "Real" and finds Atlético)
           "133714": "160",     # Paris Saint-Germain (not Paris FC)
@@ -55,7 +56,7 @@ for lid, code in LEAGUE_CODE.items():
 
 out, missing = {}, []
 for lg in clubs:
-    code = LEAGUE_CODE[lg["id"]]
+    code = LEAGUE_CODE.get(lg["id"], "uefa.champions")
     for tid, en in lg["teams"]:
         tid = str(tid)
         a = norm(ALIAS.get(en.lower(), en))
@@ -69,16 +70,9 @@ for lg in clubs:
         if hit is None:
             missing.append((code, tid, en))
             continue
-        e = out.setdefault(tid, {"espn": hit, "name": en, "codes": []})
+        e = out.setdefault(tid, {"espn": hit, "name": en})
         if e["espn"] != hit:
             print(f"conflict {en}: {e['espn']} vs {hit} in {code}")
-        if code not in e["codes"]:
-            e["codes"].append(code)
-        if code == "ksa.1":
-            for c in SAUDI_EXTRA:
-                if c not in e["codes"]:
-                    e["codes"].append(c)
-# A club in the CL list plays its own league too; give clubs only listed under the CL their CL feed alone.
 json.dump({"source": "ESPN public site API, team ids per league (built from res/raw/clubs.json)", "clubs": out},
           open(OUT, "w"), ensure_ascii=False, indent=1)
 print(f"mapped {len(out)} clubs; unmatched {len(missing)}")

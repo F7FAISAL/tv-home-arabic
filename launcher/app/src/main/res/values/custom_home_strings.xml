@@ -30,6 +30,7 @@
     <string name="hidden_apps_none" translatable="false">لا توجد تطبيقات مخفية</string>
     <!-- Read-only lines at the foot of the pill menu, one per chosen club: where its shown match came from
          (TheSportsDB, or ESPN as the fallback) and when that source last answered. -->
+    <string name="custom_match_clubs_count" translatable="false">الأندية المختارة: %1$s</string>
     <string name="custom_match_source" translatable="false">مصدر مباراة %1$s: %2$s · آخر تحديث: %3$s</string>
     <string name="custom_match_source_none" translatable="false">لا مباراة قادمة</string>
     <string name="custom_match_source_never" translatable="false">لم يتم بعد</string>

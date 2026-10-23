@@ -13,9 +13,11 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * The clubs the TV pill's «الفرق» offers, by competition (res/raw/clubs.json: Roshn Saudi League, Premier League,
- * La Liga, Serie A, Bundesliga, Ligue 1 and the Champions League league phase, 2026-27, with TheSportsDB ids).
- * The free API cannot list a league's clubs (it answers with a sample league), so the list ships with the app.
+ * The clubs «أنديتي» offers, each once under its home league (res/raw/clubs.json: Roshn Saudi League, Premier League,
+ * La Liga, Serie A, Bundesliga, Ligue 1, then the home leagues of the other 2026-27 Champions League clubs, with
+ * TheSportsDB ids). A club picked once shows its next match in any competition (MatchFeed, EspnFallback), so cups
+ * and the Champions League have no list of their own. The free API cannot list a league's clubs (it answers with a
+ * sample league), so the list ships with the app.
  */
 final class Clubs {
 

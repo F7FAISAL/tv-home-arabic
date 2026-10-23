@@ -32,7 +32,20 @@ if [ -z "${JAVA_HOME:-}" ]; then
     case "$("$JH/bin/java" -version 2>&1 || true)" in *'version "17.'*) ;; *) JH="" ;; esac
   fi
   if [ -z "$JH" ] && [ -d /opt/homebrew/opt/openjdk@17 ]; then JH=/opt/homebrew/opt/openjdk@17; fi
-  if [ -z "$JH" ]; then JH="$(java -XshowSettings:properties -version 2>&1 | awk '/java.home/ {print $3}')"; fi
+  # A JDK unpacked by hand or by a tool under ~/Library/Java (e.g. temurin-17) is not registered with java_home.
+  if [ -z "$JH" ]; then
+    for d in "$HOME"/Library/Java/*/Contents/Home /Library/Java/JavaVirtualMachines/*/Contents/Home; do
+      [ -x "$d/bin/java" ] || continue
+      case "$("$d/bin/java" -version 2>&1 || true)" in *'version "17.'*) JH="$d"; break ;; esac
+    done
+  fi
+  # Without a java on PATH this fails; under pipefail that would end the script with no word, so say why below.
+  if [ -z "$JH" ]; then JH="$(java -XshowSettings:properties -version 2>&1 | awk '/java.home/ {print $3}' || true)"; fi
+  if [ -z "$JH" ]; then
+    echo "ERROR: no JDK 17 found (java_home -v 17, Homebrew openjdk@17, ~/Library/Java, java on PATH)." >&2
+    echo "Install JDK 17 or set JAVA_HOME to it. Nothing was built, pushed or changed on the TV." >&2
+    exit 1
+  fi
   JAVA_HOME="$JH"
 fi
 export JAVA_HOME

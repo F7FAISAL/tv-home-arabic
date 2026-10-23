@@ -4,12 +4,17 @@
 # overlays config.json on its built-in config.xml; see themes/README.md for the keys.
 #
 # Usage: TV_HOST=192.168.1.50 tools/theme.sh themes/aurora
+#        TV_HOST=192.168.1.50 tools/theme.sh themes/madinah tvs/livingroom/config.local.json
+#                                                           # plus one TV's own overlay (gitignored tvs/), merged last
 #        TV_HOST=192.168.1.50 tools/theme.sh --reset        # remove the overlay, back to config.xml
 set -euo pipefail
 # Resolve the theme folder against the caller's directory before moving into tools/.
 # Git Bash's pwd says /c/Users/..., which the Windows Python cannot open; pwd -W gives C:/Users/... (as in disable.sh).
 THEME_ARG="${1:-}"
 case "$THEME_ARG" in --reset|"") ;; /*) ;; *) THEME_ARG="$(pwd -W 2>/dev/null || pwd)/$THEME_ARG" ;; esac
+TV_OVERLAY="${2:-}"
+case "$TV_OVERLAY" in "") ;; /*) ;; *) TV_OVERLAY="$(pwd -W 2>/dev/null || pwd)/$TV_OVERLAY" ;; esac
+if [ -n "$TV_OVERLAY" ] && [ ! -f "$TV_OVERLAY" ]; then echo "no such file: $TV_OVERLAY" >&2; exit 1; fi
 cd "$(dirname "$0")"
 : "${TV_HOST:?set TV_HOST to the TV IP address, e.g. TV_HOST=192.168.1.50 $0 themes/aurora}"
 PY=venv/bin/python
@@ -18,8 +23,8 @@ PY=venv/bin/python
 export MSYS_NO_PATHCONV=1
 PKG=com.gathin.tvhome
 DIR=/sdcard/Android/data/$PKG/files
-# A unique marker lets the launcher clear on-TV layout/motion choices after every theme push,
-# including a push of identical config.json bytes and --reset.
+# A unique marker per push and --reset. Launcher builds before 3.0 cleared on-TV layout/motion choices when it
+# changed; 3.0 and later keep them until «Follow theme» on the TV.
 REVISION="$("$PY" -I -c 'import uuid; print(uuid.uuid4().hex)')"
 tv() { "$PY" -I tv.py "$@"; }
 # Restart Home so it rereads the theme. Android drops a force-stopped app's accessibility services from the
@@ -55,15 +60,22 @@ THEME="${THEME_ARG:?usage: theme.sh <theme folder> | --reset}"
   || { echo "$THEME/config.json is not valid JSON" >&2; exit 1; }
 
 tv "mkdir -p $DIR" >/dev/null 2>&1 || true
-# A theme's config.local.json (gitignored: private links such as a Drive wallpaper list) is merged over
-# config.json for the TV only; the file in the repo stays as it is.
+# A theme's config.local.json (gitignored: private links such as a Drive wallpaper list), then the TV's own
+# overlay if one was given (gitignored tvs/<tv>/config.local.json: that remote's buttons), are merged over
+# config.json for the TV only, key by key (a list such as app_keys is replaced whole); the repo's files stay as they are.
 PUSH_CONFIG="$THEME/config.json"
-if [ -f "$THEME/config.local.json" ]; then
+OVERLAYS=()
+[ -f "$THEME/config.local.json" ] && OVERLAYS+=("$THEME/config.local.json")
+[ -n "$TV_OVERLAY" ] && OVERLAYS+=("$TV_OVERLAY")
+if [ ${#OVERLAYS[@]} -gt 0 ]; then
   PUSH_CONFIG="$(mktemp "${TMPDIR:-/tmp}/cyt-config.XXXXXX")"
   trap 'rm -f "$PUSH_CONFIG"' EXIT
-  "$PY" -I -c 'import json,sys; c=json.load(open(sys.argv[1])); c.update(json.load(open(sys.argv[2]))); json.dump(c,open(sys.argv[3],"w"),ensure_ascii=False)' \
-    "$THEME/config.json" "$THEME/config.local.json" "$PUSH_CONFIG" \
-    || { echo "$THEME/config.local.json is not valid JSON" >&2; exit 1; }
+  "$PY" -I -c 'import json,sys
+c = json.load(open(sys.argv[1]))
+for f in sys.argv[3:]:
+    try: c.update(json.load(open(f)))
+    except ValueError: sys.exit(f + " is not valid JSON")
+json.dump(c, open(sys.argv[2], "w"), ensure_ascii=False)' "$THEME/config.json" "$PUSH_CONFIG" "${OVERLAYS[@]}"
 fi
 tv --push "$PUSH_CONFIG" "$TMP-config.json" >/dev/null
 tv "$(put config.json)"

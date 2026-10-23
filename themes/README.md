@@ -3,8 +3,9 @@
 A theme is a folder with a `config.json` and, optionally, a `wallpaper.jpg`. Pushing one changes the
 launcher's dock, layout and look on the TV without rebuilding the APK: the launcher reads
 `config.json` as an overlay over its built-in `config.xml` the next time it starts.
-Choices made in Launcher settings take priority until you choose Follow theme. Pushing a theme or
-using `tools/theme.sh --reset` also clears those on-TV column and motion choices.
+Choices made in Launcher settings (columns, rows, animations, effects, wallpaper) take priority until you
+choose Follow theme on the TV. Pushing a theme or using `tools/theme.sh --reset` keeps them (launcher 3.0 and
+later; older builds cleared them on every push).
 
 ```bash
 TV_HOST=192.168.1.50 tools/theme.sh themes/aurora          # push a theme and restart Home
@@ -111,7 +112,7 @@ The original system idle screensaver is left unchanged.
 
 On the TV, Launcher settings has a Wallpaper row: pick one picture from the collection (or the theme's
 `wallpaper.jpg`), or None. A pick shows that one picture and stops the rotation until you choose Theme
-default, press Follow theme, or push a theme again.
+default or press Follow theme.
 
 ## Reduced motion
 

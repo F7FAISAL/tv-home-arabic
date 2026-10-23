@@ -73,6 +73,19 @@ public class MatchFeedTest {
     }
 
     @Test
+    public void aMatchBetweenTwoChosenClubsShowsOnceWhateverTheSource() {
+        Instant k = Instant.parse("2026-10-30T18:00:00Z");
+        MatchFeed.Match forShabab = new MatchFeed.Match("Al-Shabab", "136020", "Al-Ahli", "137721", "Saudi-Arabian Pro League", k, "2510001");
+        MatchFeed.Match forAhli = new MatchFeed.Match("Al-Shabab", "136020", "Al-Ahli", "137721", "Saudi Pro League", k, "espn:401")
+                .from(EspnFallback.SOURCE);
+        assertEquals(1, MatchFeed.distinct(java.util.Arrays.asList(forShabab, forAhli), NOW, 5).size());
+        // Opponents ESPN cannot name by TheSportsDB id stay apart by event.
+        MatchFeed.Match a = new MatchFeed.Match("Al-Hilal", "136013", "Al-Shamal", "espn:21000", "AFC", k, "espn:1");
+        MatchFeed.Match b = new MatchFeed.Match("Al-Hilal", "136013", "Al-Shamal", "espn:21000", "AFC", k, "espn:2");
+        assertEquals(2, MatchFeed.distinct(java.util.Arrays.asList(a, b), NOW, 5).size());
+    }
+
+    @Test
     public void unknownNamesStayInEnglish() {
         assertEquals("Some New Club", MatchFeed.teamAr("Some New Club"));
         assertEquals("أتلتيكو مدريد", MatchFeed.teamAr("Atlético Madrid"));
@@ -160,13 +173,36 @@ public class MatchFeedTest {
 
     @Test
     public void onlyAnAnswerWithACompleteEventReplacesTheCache() throws Exception {
-        assertTrue(MatchFeed.wellFormed(new JSONObject(ANSWER)));
-        assertFalse(MatchFeed.wellFormed(null));
-        assertFalse(MatchFeed.wellFormed(new JSONObject("{}")));
-        assertFalse(MatchFeed.wellFormed(new JSONObject("{\"events\":null}")));
-        assertFalse(MatchFeed.wellFormed(new JSONObject("{\"events\":[]}")));
-        assertFalse(MatchFeed.wellFormed(new JSONObject("{\"events\":[{\"strHomeTeam\":\"Barcelona\"}]}")));
+        assertTrue(MatchFeed.wellFormed(new JSONObject(ANSWER), TEAM));
+        assertFalse(MatchFeed.wellFormed(null, TEAM));
+        assertFalse(MatchFeed.wellFormed(new JSONObject("{}"), TEAM));
+        assertFalse(MatchFeed.wellFormed(new JSONObject("{\"events\":null}"), TEAM));
+        assertFalse(MatchFeed.wellFormed(new JSONObject("{\"events\":[]}"), TEAM));
+        assertFalse(MatchFeed.wellFormed(new JSONObject("{\"events\":[{\"strHomeTeam\":\"Barcelona\"}]}"), TEAM));
         assertFalse(MatchFeed.wellFormed(new JSONObject(ANSWER.replace("2026-10-25T20:00:00", "soon")
-                .replace("\"2026-10-25\"", "null"))));
+                .replace("\"2026-10-25\"", "null")), TEAM));
+    }
+
+    /** TheSportsDB eventsnext.php?id=133602 (Liverpool), 2026-10-23: a real fixture, but not one of Barcelona's. */
+    private static final String OTHER_CLUB = "{\"events\":[{\"idEvent\":\"2494071\",\"strTimestamp\":\"2026-10-25T14:00:00\","
+            + "\"strHomeTeam\":\"Liverpool\",\"strAwayTeam\":\"Brighton and Hove Albion\",\"idHomeTeam\":\"133602\","
+            + "\"idAwayTeam\":\"133619\",\"strLeague\":\"English Premier League\",\"strStatus\":\"NS\",\"strPostponed\":\"no\"}]}";
+
+    @Test
+    public void anotherClubsMatchIsNeverShownOrCached() throws Exception {
+        // The answer for Barcelona names Liverpool v Brighton: it must not replace the cache...
+        assertFalse(MatchFeed.wellFormed(new JSONObject(OTHER_CLUB), TEAM));
+        assertTrue(MatchFeed.wellFormed(new JSONObject(OTHER_CLUB), "133619"));    // Brighton plays in it
+        // ...and a cache that already holds it shows nothing for Barcelona, whichever source it came from.
+        JSONObject c = cache(10, 10, OTHER_CLUB);
+        assertNull(MatchFeed.pick(c, NOW));
+        c.put("body", new JSONObject("{\"events\":null}")).put("espn_body", new JSONObject(OTHER_CLUB))
+                .put("espn_fetched", NOW.toEpochMilli());
+        assertNull(MatchFeed.pick(c, NOW));
+        // Barcelona as the away side still counts.
+        String away = ANSWER.replace("\"idHomeTeam\":\"133739\"", "\"idHomeTeam\":\"133738\"")
+                .replace("\"idAwayTeam\":\"133738\"", "\"idAwayTeam\":\"133739\"");
+        assertNotNull(MatchFeed.pick(cache(10, 10, away), NOW));
+        assertNotNull(MatchFeed.pick(cache(10, 10, ANSWER), NOW));
     }
 }

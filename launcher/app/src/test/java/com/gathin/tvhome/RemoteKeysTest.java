@@ -3,6 +3,7 @@ package com.gathin.tvhome;
 import java.util.Map;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class RemoteKeysTest {
@@ -46,5 +47,16 @@ public class RemoteKeysTest {
         assertEquals("e.f", scans.get(491));
         // and the keycode parser leaves scancode entries alone
         assertEquals(1, parse(entries.toArray(new String[0])).size());
+    }
+
+    @Test public void homeKeyServiceLeavesAppKeysToInputKeyService() {
+        String pkg = "com.gathin.tvhome";
+        // As build-and-install.sh writes the list with both services on (this TCL G10 opened Netflix twice).
+        assertTrue(RemoteKeys.inputServiceListed("com.gathin.tvhome/.InputKeyService:com.gathin.tvhome/.HomeKeyService", pkg));
+        assertTrue(RemoteKeys.inputServiceListed("other.app/.Svc:com.gathin.tvhome/com.gathin.tvhome.InputKeyService", pkg));
+        assertFalse(RemoteKeys.inputServiceListed("com.gathin.tvhome/.HomeKeyService", pkg));
+        assertFalse(RemoteKeys.inputServiceListed("com.other/.InputKeyService", pkg));
+        assertFalse(RemoteKeys.inputServiceListed("", pkg));
+        assertFalse(RemoteKeys.inputServiceListed(null, pkg));
     }
 }

@@ -22,3 +22,5 @@ launcher/replay_pid*.log
 launcher/fonts-local/
 # A theme's private settings (e.g. the Apps Script link for Drive wallpapers): merged by tools/theme.sh, never committed
 themes/*/config.local.json
+# One folder per TV: its notes (IP, model, remote) and its own theme overlay (that remote's buttons); see CLAUDE.md
+tvs/

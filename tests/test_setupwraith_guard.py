@@ -39,8 +39,9 @@ class SetupwraithGuardTest(unittest.TestCase):
             (repo / "debloat.txt").write_text(LIST)
             capture = Path(tmp) / "commands.txt"
             env = dict(os.environ, CAPTURE=str(capture), **(extra_env or {}))
+            # stdin closed: the fake client's catch-all `cat` would otherwise wait on an open runner stdin.
             result = subprocess.run(["bash", str(tools / "disable.sh"), "debloat.txt"], cwd=repo,
-                                    env=env, capture_output=True, text=True)
+                                    env=env, capture_output=True, text=True, stdin=subprocess.DEVNULL)
             self.assertEqual(result.returncode, 0, result.stderr)
             return capture.read_text().splitlines(), result.stderr
 

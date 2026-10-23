@@ -54,25 +54,62 @@ public class EspnFallbackTest {
     }
 
     @Test
-    public void theSportsDbWinsAndEspnOnlyFillsIn() throws Exception {
+    public void theSoonerOfBothSourcesWinsAndTheSportsDbOnATie() throws Exception {
         JSONObject espn = new JSONObject().put("events", new JSONArray(
-                EspnFallback.convert(new JSONObject(SCHEDULE), "afc.champions", null)));
-        JSONObject cache = new JSONObject()
+                EspnFallback.convert(new JSONObject(SCHEDULE), "afc.champions", Collections.singletonMap("8346", "137721"))));
+        JSONObject cache = new JSONObject().put("team", "137721")
                 .put("fetched", NOW.toEpochMilli()).put("body", new JSONObject("{\"events\":null}"))
                 .put("espn_fetched", NOW.toEpochMilli()).put("espn_body", espn);
         MatchFeed.Match m = MatchFeed.pick(cache, NOW);
         assertNotNull(m);
         assertEquals(EspnFallback.SOURCE, m.source);
 
-        JSONObject tsdb = new JSONObject("{\"events\":[{\"idEvent\":\"7\",\"strHomeTeam\":\"Al-Ahli\",\"strAwayTeam\":\"Al-Shabab\","
+        JSONObject tsdb = new JSONObject("{\"events\":[{\"idEvent\":\"7\",\"strHomeTeam\":\"Al-Ahli\",\"strAwayTeam\":\"Al-Shabab\",\"idHomeTeam\":\"137721\","
                 + "\"strTimestamp\":\"2026-10-25T18:00:00\",\"strStatus\":\"NS\",\"strPostponed\":\"no\"}]}");
         cache.put("body", tsdb);
         m = MatchFeed.pick(cache, NOW);
         assertEquals(MatchFeed.SOURCE, m.source);
         assertEquals("Al-Shabab", m.awayTeam);
 
+        // A cup or AFC match before the league game TheSportsDB knows: ESPN's comes first.
+        cache.put("body", new JSONObject(tsdb.toString().replace("2026-10-25T18:00:00", "2026-10-30T18:00:00")));
+        m = MatchFeed.pick(cache, NOW);
+        assertEquals(EspnFallback.SOURCE, m.source);
+        assertEquals(Instant.parse("2026-10-26T16:00:00Z"), m.kickoff);
+
         cache.remove("espn_body");
         cache.put("body", new JSONObject("{\"events\":null}"));
         assertNull(MatchFeed.pick(cache, NOW));
+    }
+
+    /** soccer/all/teams/929/schedule, trimmed: Al-Hilal's next league game and the AFC match before it. */
+    private static final String ALL_COMPETITIONS = "{\"events\":["
+            + "{\"id\":\"501\",\"date\":\"2026-10-31T18:00Z\",\"league\":{\"slug\":\"ksa.1\",\"name\":\"Saudi Pro League\"},"
+            + "\"competitions\":[{\"competitors\":[{\"homeAway\":\"home\",\"team\":{\"id\":\"929\",\"displayName\":\"Al Hilal\"}},"
+            + "{\"homeAway\":\"away\",\"team\":{\"id\":\"2273\",\"displayName\":\"Al Fateh\"}}]}]},"
+            + "{\"id\":\"502\",\"date\":\"2026-10-27T18:15Z\",\"league\":{\"slug\":\"afc.champions\",\"name\":\"AFC Champions League Elite\"},"
+            + "\"competitions\":[{\"competitors\":[{\"homeAway\":\"home\",\"team\":{\"id\":\"21000\",\"displayName\":\"Al-Shamal\"}},"
+            + "{\"homeAway\":\"away\",\"team\":{\"id\":\"929\",\"displayName\":\"Al Hilal\"}}]}]},"
+            + "{\"id\":\"503\",\"date\":\"2026-12-02T17:00Z\",\"league\":{\"slug\":\"xyz.cup\",\"name\":\"Some New Cup\"},"
+            + "\"competitions\":[{\"competitors\":[{\"homeAway\":\"home\",\"team\":{\"id\":\"929\",\"displayName\":\"Al Hilal\"}},"
+            + "{\"homeAway\":\"away\",\"team\":{\"id\":\"1\",\"displayName\":\"Al Sadd\"}}]}]}"
+            + "]}";
+
+    @Test
+    public void oneAllCompetitionsAnswerNamesEachMatchByItsOwnCompetition() throws Exception {
+        List<JSONObject> events = EspnFallback.convert(new JSONObject(ALL_COMPETITIONS), "", Collections.singletonMap("929", "136013"),
+                Collections.singletonMap("929", "Al-Hilal"));
+        assertEquals(3, events.size());
+        assertEquals("Saudi Pro League", events.get(0).getString("strLeague"));
+        assertEquals("AFC Champions League Elite", events.get(1).getString("strLeague"));
+        assertEquals("Some New Cup", events.get(2).getString("strLeague"));            // unknown code: ESPN's own name
+        assertEquals("Al-Hilal", events.get(1).getString("strAwayTeam"));               // TheSportsDB's spelling
+        assertEquals("الهلال", MatchFeed.teamAr(events.get(1).getString("strAwayTeam")));
+
+        JSONObject cache = new JSONObject().put("team", "136013").put("fetched", 0)
+                .put("espn_fetched", NOW.toEpochMilli()).put("espn_body", new JSONObject().put("events", new JSONArray(events)));
+        MatchFeed.Match m = MatchFeed.pick(cache, NOW);
+        assertEquals(Instant.parse("2026-10-27T18:15:00Z"), m.kickoff);                 // the AFC match, not the league's
+        assertEquals("دوري أبطال آسيا للنخبة", MatchFeed.leagueAr(m.league));
     }
 }

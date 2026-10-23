@@ -2,9 +2,11 @@
 # launcher on the TV and restart Home. See themes/README.md for the keys.
 #
 # Usage: tools\theme.ps1 -TvHost 192.168.1.50 themes\aurora
+#        tools\theme.ps1 -TvHost 192.168.1.50 themes\madinah tvs\livingroom\config.local.json   # plus one TV's overlay
 #        tools\theme.ps1 -TvHost 192.168.1.50 -Reset
 param(
     [Parameter(Position = 0)][string]$Theme,
+    [Parameter(Position = 1)][string]$TvConfig,
     [switch]$Reset,
     [string]$TvHost = $env:TV_HOST
 )
@@ -14,6 +16,7 @@ if (-not $TvHost) { throw 'pass -TvHost <tv ip> or set $env:TV_HOST' }
 $env:TV_HOST = $TvHost
 # Resolve the theme folder against the caller's directory before moving into tools\.
 if ($Theme) { $Theme = (Resolve-Path $Theme).Path }
+if ($TvConfig) { $TvConfig = (Resolve-Path $TvConfig).Path }
 Set-Location $PSScriptRoot
 $py = 'venv\Scripts\python.exe'
 if (-not (Test-Path $py)) { throw 'run: python -m venv tools\venv; tools\venv\Scripts\python.exe -m pip install -r tools\requirements.txt' }
@@ -47,10 +50,10 @@ if (-not (Test-Path $config)) { throw "no config.json in $Theme" }
 try { Get-Content $config -Raw | ConvertFrom-Json | Out-Null } catch { throw "$config is not valid JSON" }
 
 & $py -I tv.py "mkdir -p $dir 2>/dev/null" | Out-Null
-# A theme's config.local.json (gitignored: the Drive link, the Thmanyah font choice) is merged over config.json
-# for the TV only, as theme.sh does.
-$local = Join-Path $Theme 'config.local.json'
-if (Test-Path $local) {
+# A theme's config.local.json (gitignored: the Drive link, the Thmanyah font choice), then the TV's own overlay if
+# one was given (gitignored tvs\<tv>\config.local.json), are merged over config.json for the TV only, as theme.sh does.
+foreach ($local in @((Join-Path $Theme 'config.local.json'), $TvConfig)) {
+    if (-not $local -or -not (Test-Path $local)) { continue }
     $merged = [System.IO.Path]::GetTempFileName()
     & $py -I -c 'import json,sys; c=json.load(open(sys.argv[1],encoding="utf-8")); c.update(json.load(open(sys.argv[2],encoding="utf-8"))); json.dump(c,open(sys.argv[3],"w",encoding="utf-8"),ensure_ascii=False)' $config $local $merged
     if ($LASTEXITCODE -ne 0) { throw "$local is not valid JSON" }

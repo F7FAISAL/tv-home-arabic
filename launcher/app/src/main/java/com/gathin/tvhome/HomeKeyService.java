@@ -24,7 +24,7 @@ public class HomeKeyService extends AccessibilityService {
     private int[] settingsScancodes = new int[0];
     private int[] settingsKeycodes = new int[0];
     private boolean settingsPanel;
-    /** app_keys, the same map InputKeyService reads, for setups that run only this service. */
+    /** app_keys, the same map InputKeyService reads, for setups that run only this service (see inputServiceOn). */
     private Map<Integer, String> appKeys = Collections.emptyMap();
     private Map<Integer, String> appScancodes = Collections.emptyMap();
 
@@ -47,10 +47,17 @@ public class HomeKeyService extends AccessibilityService {
         return false;
     }
 
+    /** InputKeyService gets the same keys and opens app_keys itself; answering here too would start the app twice. */
+    private boolean inputServiceOn() {
+        return RemoteKeys.inputServiceListed(Settings.Secure.getString(getContentResolver(),
+                Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES), getPackageName());
+    }
+
     @Override
     protected boolean onKeyEvent(KeyEvent event) {
         // A scancode entry is more specific than any keycode, so it goes first.
         String scanApp = appScancodes.get(event.getScanCode());
+        if (scanApp != null && inputServiceOn()) scanApp = null;
         if (scanApp != null) {
             if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) RemoteKeys.launch(this, scanApp);
             return true;
@@ -65,7 +72,7 @@ public class HomeKeyService extends AccessibilityService {
             return true;
         }
         String app = appKeys.get(event.getKeyCode());
-        if (app != null) {
+        if (app != null && !inputServiceOn()) {
             if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) RemoteKeys.launch(this, app);
             return true;
         }

@@ -106,14 +106,16 @@ final class MatchFeed {
     }
 
     /**
-     * TheSportsDB's next match, else the ESPN fallback's (kept in the same cache under espn_body when TheSportsDB had
-     * no upcoming match at the last refresh), each judged by its own fetch time; null when neither has one.
+     * The club's next match in any competition: the sooner of TheSportsDB's and ESPN's (kept in the same cache under
+     * espn_body), each judged by its own fetch time; TheSportsDB on a tie, null when neither has one. The free
+     * TheSportsDB key usually knows only the next league game, so a cup, AFC or UEFA match before it comes from ESPN.
      */
     static Match pick(JSONObject c, Instant now) {
-        Match m = parse(c.optJSONObject("body"), now, Instant.ofEpochMilli(c.optLong("fetched", 0)));
-        if (m != null) return m;
-        m = parse(c.optJSONObject("espn_body"), now, Instant.ofEpochMilli(c.optLong("espn_fetched", 0)));
-        return m != null ? m.from(EspnFallback.SOURCE) : null;
+        String team = c.optString("team");
+        Match tsdb = parse(c.optJSONObject("body"), now, Instant.ofEpochMilli(c.optLong("fetched", 0)), team);
+        Match espn = parse(c.optJSONObject("espn_body"), now, Instant.ofEpochMilli(c.optLong("espn_fetched", 0)), team);
+        if (espn != null && (tsdb == null || espn.kickoff.isBefore(tsdb.kickoff))) return espn.from(EspnFallback.SOURCE);
+        return tsdb;
     }
 
     /** For the pill menu: the source of the club's shown match and when that source last answered (null: none). */
@@ -136,16 +138,18 @@ final class MatchFeed {
     }
 
     /**
-     * «مصدر مباراة الأهلي: ESPN · آخر تحديث: 4:33 ص» for each chosen club (six at most): the source its shown match came
-     * from and when that source last answered, with the day too when it was not today; in the view's digits.
+     * «الأندية المختارة: 6», then «مصدر مباراة الأهلي: ESPN · آخر تحديث: 4:33 ص» for every chosen club: the source its
+     * shown match came from and when that source last answered, with the day too when it was not today; in the view's
+     * digits. All of them, so a club ticked by mistake cannot hide below the first few.
      */
     static java.util.List<String> sourceLines(Context ctx, CustomHomeConfig c) {
         java.util.Map<String, String> names = new HashMap<>();
         for (Clubs.League l : Clubs.load(ctx)) for (Clubs.Club club : l.clubs) names.put(club.id, club.label());
         Instant now = Instant.now();
         java.util.List<String> out = new java.util.ArrayList<>();
+        String count = rtl(ctx.getString(R.string.custom_match_clubs_count, String.valueOf(c.teams.size())));
+        out.add("arabic".equals(c.digits) ? NumberStyle.toArabic(count) : count);
         for (String id : c.teams) {
-            if (out.size() == 6) break;
             Info info = new MatchFeed(ctx, id).info(now);
             String when = ctx.getString(R.string.custom_match_source_never);
             if (info.updated != null) {
@@ -199,16 +203,16 @@ final class MatchFeed {
             }
             JSONObject body = new JSONObject(get(String.format(Locale.US, URL_FMT, teamId)));
             // Safe data: only an answer with a complete event replaces the cached one (and its fetch time).
-            if (!wellFormed(body)) throw new IOException("answer has no complete event");
+            if (!wellFormed(body, teamId)) throw new IOException("answer has no complete event for this club");
             out.put("body", body);
             out.put("fetched", now.toEpochMilli());
         } catch (Exception e) {
             // Offline, a timeout or a changed API: keep the last good answer and say nothing on screen.
             Log.w(TAG, "next match not updated: " + e);
         }
-        // TheSportsDB has nothing upcoming for this club: ask ESPN (league, AFC, King's Cup), keep its last answer on failure.
+        // ESPN too, every competition the club plays (cups, AFC, UEFA); keep its last answer on failure.
         EspnFallback.Club espn = EspnFallback.club(ctx, teamId);
-        if (espn != null && parse(out.optJSONObject("body"), now, Instant.ofEpochMilli(out.optLong("fetched", 0))) == null) {
+        if (espn != null) {
             try {
                 out.put("espn_body", EspnFallback.fetch(ctx, espn));
                 out.put("espn_fetched", now.toEpochMilli());
@@ -243,21 +247,22 @@ final class MatchFeed {
     }
 
     /**
-     * True when an eventsnext answer holds at least one event with both teams and a readable kick-off, whatever its
-     * date: an empty, cut or changed answer is not worth more than the last good one in the cache.
+     * True when an eventsnext answer holds at least one event of {@code teamId} with both teams and a readable
+     * kick-off, whatever its date: an empty, cut, changed or wrong club's answer is not worth more than the last good
+     * one in the cache.
      */
-    static boolean wellFormed(JSONObject body) {
+    static boolean wellFormed(JSONObject body, String teamId) {
         JSONArray events = body == null ? null : body.optJSONArray("events");
         for (int i = 0; events != null && i < events.length(); i++) {
             JSONObject e = events.optJSONObject(i);
-            if (e != null && !e.optString("strHomeTeam", "").trim().isEmpty() && !e.optString("strAwayTeam", "").trim().isEmpty()
-                    && kickoff(e) != null) return true;
+            if (e != null && involves(e, teamId) && !e.optString("strHomeTeam", "").trim().isEmpty()
+                    && !e.optString("strAwayTeam", "").trim().isEmpty() && kickoff(e) != null) return true;
         }
         return false;
     }
 
     /**
-     * The first event of an eventsnext answer that has not finished: kickoff from strTimestamp (UTC), or
+     * The soonest event of an eventsnext answer that has not finished: kickoff from strTimestamp (UTC), or
      * dateEvent and strTime; postponed, cancelled or finished events are skipped. Null when nothing qualifies.
      */
     static Match parse(JSONObject body, Instant now) {
@@ -270,11 +275,20 @@ final class MatchFeed {
      * source may already have dropped; the next event in the answer, if any, takes its place.
      */
     static Match parse(JSONObject body, Instant now, Instant fetched) {
+        return parse(body, now, fetched, null);
+    }
+
+    /**
+     * As {@link #parse(JSONObject, Instant, Instant)}, keeping only events {@code teamId} plays in (null: any): an
+     * answer about another club must never show as that club's «مباراة … القادمة» to someone who never picked it.
+     */
+    static Match parse(JSONObject body, Instant now, Instant fetched, String teamId) {
         JSONArray events = body == null ? null : body.optJSONArray("events");
         if (events == null) return null;
+        Match soonest = null;   // answers are usually in date order, but one merged from several lists need not be
         for (int i = 0; i < events.length(); i++) {
             JSONObject e = events.optJSONObject(i);
-            if (e == null) continue;
+            if (e == null || !involves(e, teamId)) continue;
             if ("yes".equalsIgnoreCase(e.optString("strPostponed"))) continue;
             String status = e.optString("strStatus", "").toUpperCase(Locale.ROOT);
             if (status.matches("FT|AET|PEN|CANC|PST|ABD|AWD|WO|MATCH FINISHED")) continue;
@@ -284,9 +298,14 @@ final class MatchFeed {
             Match m = new Match(home, e.optString("idHomeTeam"), away, e.optString("idAwayTeam"),
                     e.optString("strLeague", "").trim(), kickoff, e.optString("idEvent", ""));
             if (!now.isBefore(kickoff) && fetched.isBefore(kickoff)) continue;   // kicked off, no fresh word
-            if (m.showAt(now)) return m;
+            if (m.showAt(now) && (soonest == null || kickoff.isBefore(soonest.kickoff))) soonest = m;
         }
-        return null;
+        return soonest;
+    }
+
+    /** True when {@code teamId} is the event's home or away side (TheSportsDB ids; EspnFallback converts its own). */
+    private static boolean involves(JSONObject e, String teamId) {
+        return teamId == null || teamId.equals(e.optString("idHomeTeam")) || teamId.equals(e.optString("idAwayTeam"));
     }
 
     private static Instant kickoff(JSONObject e) {
@@ -447,6 +466,10 @@ final class MatchFeed {
                 "afc champions league", "دوري أبطال آسيا", "afc champions league elite", "دوري أبطال آسيا للنخبة",
                 "saudi king's cup", "كأس الملك", "saudi super cup", "كأس السوبر السعودي",
                 "afc champions league two", "دوري أبطال آسيا 2",
+                "english community shield", "درع المجتمع الإنجليزي", "italian coppa italia", "كأس إيطاليا",
+                "italian super cup", "كأس السوبر الإيطالي", "german dfb pokal", "كأس ألمانيا",
+                "german super cup", "كأس السوبر الألماني", "french coupe de france", "كأس فرنسا",
+                "french super cup", "كأس السوبر الفرنسي",
         };
         // Clubs a theme can name in team_id instead of the number; every id checked against lookupteam.php.
         String[] ids = {
@@ -497,10 +520,19 @@ final class MatchFeed {
      */
     static java.util.List<Match> distinct(java.util.Collection<Match> matches, Instant now, int max) {
         java.util.Map<String, Match> byEvent = new java.util.LinkedHashMap<>();
-        for (Match m : matches) if (m != null && m.showAt(now)) byEvent.putIfAbsent(m.eventId, m);
+        for (Match m : matches) if (m != null && m.showAt(now)) byEvent.putIfAbsent(sameMatchKey(m), m);
         java.util.List<Match> out = new java.util.ArrayList<>(byEvent.values());
         java.util.Collections.sort(out, (a, b) -> a.kickoff.compareTo(b.kickoff));
         return out.size() > max ? out.subList(0, max) : out;
+    }
+
+    /**
+     * One key per real match: two chosen clubs that play each other may each have it from a different source (ids
+     * "2506259" and "espn:401…"), but both name the clubs by TheSportsDB id at the same kick-off.
+     */
+    private static String sameMatchKey(Match m) {
+        boolean ids = m.homeId != null && m.homeId.matches("\\d+") && m.awayId != null && m.awayId.matches("\\d+");
+        return ids ? m.homeId + "|" + m.awayId + "|" + m.kickoff : m.eventId;
     }
 
     static String teamAr(String english) {

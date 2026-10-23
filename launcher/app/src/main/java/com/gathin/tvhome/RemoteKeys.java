@@ -13,8 +13,9 @@ import java.util.function.ToIntFunction;
 /**
  * Remote buttons that only the stock launcher answered, for InputKeyService and HomeKeyService: app_keys
  * (config.xml or a theme) maps a keycode to the app it opens, as "190:com.google.android.youtube.tv" or
- * "KEYCODE_BUTTON_3:com.google.android.youtube.tv", or a scancode as "scan:490:com.wbd.hbomax". One map for both services; whichever filters the key first
- * consumes it.
+ * "KEYCODE_BUTTON_3:com.google.android.youtube.tv", or a scancode as "scan:490:com.wbd.hbomax". One map for both services.
+ * Android hands every filtered key to each enabled service, so with both on only InputKeyService opens the app
+ * (HomeKeyService checks {@link #inputServiceListed}); otherwise one press starts it twice.
  */
 final class RemoteKeys {
     private RemoteKeys() { }
@@ -71,6 +72,19 @@ final class RemoteKeys {
             if (scan > 0) keys.put(scan, parts[2].trim());
         }
         return keys;
+    }
+
+    /**
+     * True when Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES ({@code enabled}, ':'-separated) names this app's
+     * InputKeyService, in the short ("pkg/.InputKeyService") or the full form.
+     */
+    static boolean inputServiceListed(String enabled, String pkg) {
+        if (enabled == null || pkg == null) return false;
+        for (String entry : enabled.split(":")) {
+            String e = entry.trim();
+            if (e.equals(pkg + "/.InputKeyService") || e.equals(pkg + "/" + pkg + ".InputKeyService")) return true;
+        }
+        return false;
     }
 
     /** Opens an app from a remote button: its TV entry if it has one, else its phone entry. */

@@ -34,6 +34,37 @@ wallpapers. The user guide is the Arabic `README.md`; design notes are in `docs/
 7. When the user is done: switch USB and Network debugging off, revoke the authorisations, reboot, and check
    `tools/venv/bin/python tools/adb-closed.py <ip>` reports the port closed.
 
+## One repository, several TVs
+
+This repository is the only source for every TV it runs on. Each TV has a gitignored folder `tvs/<tv>/`:
+
+- `TV.md`: the private notes (model, IP, remote keycodes, quirks, which backups are its own, what to do next time).
+  Read it before touching that TV.
+- `tv.env`: `DEVICE=` (`getprop ro.product.device`, the model guard), `TV_HOST=` (default address),
+  `THEME=themes/madinah`.
+- `config.local.json`: that TV's own theme overlay, merged last (its remote's app buttons, `app_keys`; a list key is
+  replaced whole, so list every button).
+
+What all the owner's TVs share stays in the theme's gitignored `config.local.json` (font, Drive link). Backups stay
+in `backup/<tv>-<date>/`; never run one TV's backup scripts on another.
+
+### Updating a TV that already runs the launcher
+
+1. The owner switches debugging on; probe read-only first (Home owner, `versionName`, disabled packages, key
+   services, `appops get com.gathin.tvhome APP_AUTO_START`) and report before changing anything.
+2. If the launcher's on-TV choices matter, save what can be read (`/sdcard/Android/data/com.gathin.tvhome/files/`,
+   `pm path` + `tv.py --pull` for the installed APK) into `backup/`. SharedPreferences can't be read from a release
+   build.
+3. `tools/update-tv.sh tvs/<tv>`. It refuses a different model and a TV whose Home isn't this launcher, builds and
+   installs in place (`STOCK_LAUNCHER=none`, both key services; nothing disabled), pushes `THEME` with the TV's
+   overlay, and prints version, Home, key services and auto-start. A theme push keeps the choices made on the TV.
+4. Check the remote's buttons with real presses, one at a time, and read the key events and app starts from
+   `logcat -d -v time -T '<time>'` (`handleKeyBeforeQueueing`, `ActivityTaskManager: START`). Injected keys don't
+   reliably reach the key services.
+5. Bump `versionCode`/`versionName` in `launcher/app/build.gradle` whenever the launcher changes, so a probe can
+   tell builds apart. Downgrading needs an uninstall, which wipes the on-TV choices.
+6. Close debugging (step 7 above) and update `tvs/<tv>/TV.md`.
+
 ## Thmanyah font (optional)
 
 The default font is IBM Plex Sans Arabic (OFL, bundled). Thmanyah's licence forbids redistributing, renaming or
