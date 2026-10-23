@@ -231,6 +231,11 @@
     </integer-array>
     <!-- TheSportsDB team id: 133739 is FC Barcelona. -->
     <string name="team_id" translatable="false">133739</string>
+
+    <!-- «تحديث الأداة» in launcher settings: the GitHub releases this launcher updates from (tools/release.sh publishes
+         tvhome-<versionName>-<versionCode>.apk and its .sha256). Works only while the repository is public; a fork
+         points this at its own releases, signed with its own key. -->
+    <string name="update_releases_url" translatable="false">https://api.github.com/repos/F7FAISAL/tv-home-arabic/releases/latest</string>
     <!-- The city shown top left, for prayer times and weather: a name from Cities.java (menu button → «الموقع» overrides). -->
     <string name="city" translatable="false">المدينة المنورة</string>
     <!-- With several clubs chosen, each next match shows this many seconds before the next fades in (3 to 120). -->

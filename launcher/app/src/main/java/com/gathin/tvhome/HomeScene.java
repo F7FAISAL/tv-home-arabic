@@ -217,21 +217,17 @@ final class HomeScene {
 
     /**
      * {regular, bold} of the named font. plex is bundled with both weights (and Arabic); outfit is bundled for
-     * Latin, Arabic then comes from the system font; system is the TV's own sans-serif; thmanyah is the user's
-     * Thmanyah Sans, packaged from fonts-local as is, and plex when this build has no copy of it.
+     * Latin, Arabic then comes from the system font; system is the TV's own sans-serif; thmanyah is the owner's
+     * Thmanyah Sans, read from the TV (ThemeFonts; never inside the APK), and plex when the TV has no copy of it.
      */
     private static Typeface[] fonts(Context ctx, String name) {
         Resources res = ctx.getResources();
         switch (name) {
             case "thmanyah":
-                try {
-                    return new Typeface[]{
-                            Typeface.createFromAsset(ctx.getAssets(), "thmanyah/thmanyahsans-Regular.otf"),
-                            Typeface.createFromAsset(ctx.getAssets(), "thmanyah/thmanyahsans-Bold.otf")};
-                } catch (RuntimeException e) {
-                    Log.w(TAG, "Thmanyah Sans is not in this build (launcher/fonts-local); using IBM Plex Sans Arabic");
-                    return fonts(ctx, "plex");
-                }
+                Typeface[] own = ThemeFonts.thmanyah(ctx);
+                if (own != null) return own;
+                Log.w(TAG, "Thmanyah Sans is not on this TV (tools/install-thmanyah.py, then tools/theme.sh); using IBM Plex Sans Arabic");
+                return fonts(ctx, "plex");
             case "outfit":
                 return new Typeface[]{res.getFont(R.font.outfit_regular), res.getFont(R.font.outfit_medium)};
             case "system":

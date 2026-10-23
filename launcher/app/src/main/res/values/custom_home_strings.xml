@@ -47,4 +47,19 @@
     <string name="custom_iqama_in" translatable="false">الإقامة %s</string>
     <!-- «أوقات الإقامة» list rows: «الفجر: 25 دقيقة». -->
     <string name="custom_iqama_row" translatable="false">%1$s: %2$s</string>
+    <!-- «تحديث الأداة» (launcher settings, AppUpdater). -->
+    <string name="update_title" translatable="false">تحديث الأداة</string>
+    <string name="update_current" translatable="false">الإصدار الحالي: %1$s</string>
+    <string name="update_checking" translatable="false">الإصدار الحالي: %1$s · جارٍ البحث عن تحديث…</string>
+    <string name="update_up_to_date" translatable="false">الإصدار الحالي: %1$s · أحدث إصدار: %2$s، لا تحديث</string>
+    <string name="update_available" translatable="false">الإصدار الحالي: %1$s · أحدث إصدار: %2$s، اضغط للتنزيل والتثبيت</string>
+    <string name="update_downloading" translatable="false">جارٍ تنزيل %1$s… %2$d٪</string>
+    <string name="update_confirm" translatable="false">اضغط «تثبيت» في النافذة التالية. إعداداتك تبقى كما هي.</string>
+    <string name="update_failed_network" translatable="false">تعذّر الوصول إلى GitHub، تحقّق من الإنترنت وأعد المحاولة</string>
+    <string name="update_failed_no_release" translatable="false">لا يوجد إصدار منشور على GitHub بعد (أو المستودع ليس عاماً)</string>
+    <string name="update_failed_release" translatable="false">آخر إصدار على GitHub لا يحوي ملف الأداة مع رمز التحقق</string>
+    <string name="update_failed_checksum" translatable="false">الملف المنزّل لا يطابق رمز التحقق SHA-256، لم يُثبَّت</string>
+    <string name="update_failed_signature" translatable="false">هذا الإصدار موقّع بمفتاح غير مفتاح الأداة المثبتة، لا يمكن تثبيته فوقها</string>
+    <string name="update_none_newer" translatable="false">الملف المنزّل ليس أحدث من الإصدار المثبت</string>
+    <string name="update_failed_install" translatable="false">لم يكتمل التثبيت</string>
 </resources>

@@ -54,6 +54,15 @@ export ANDROID_HOME="${ANDROID_HOME:-$(for d in ~/Library/Android/sdk ~/Android/
 export ANDROID_HOME="${ANDROID_HOME:-/opt/homebrew/share/android-commandlinetools}"
 export PATH="$JAVA_HOME/bin:$PATH"
 [ -f local.properties ] || echo "sdk.dir=$ANDROID_HOME" > local.properties
+# The release key (CLAUDE.md, "Releases"): ~/.tv-home-arabic/release.jks, its password in the macOS Keychain. Every
+# TV that should take «تحديث الأداة» updates must carry this key; without it the APK is signed with the debug key.
+if [ -z "${TVHOME_KEYSTORE:-}" ] && [ -f "$HOME/.tv-home-arabic/release.jks" ] && command -v security >/dev/null; then
+  if TVHOME_KS_PASS="$(security find-generic-password -s tv-home-arabic-release -w 2>/dev/null)"; then
+    export TVHOME_KEYSTORE="$HOME/.tv-home-arabic/release.jks" TVHOME_KS_PASS
+  fi
+fi
+if [ -n "${TVHOME_KEYSTORE:-}" ]; then echo "Signing with the release key ($TVHOME_KEYSTORE)."
+else echo "note: no release key (~/.tv-home-arabic/release.jks + Keychain); signing with this computer's debug key." >&2; fi
 ./gradlew assembleRelease -q --console=plain
 # Which app owns Home differs by build (com.google.android.tvlauncher on Android TV,
 # com.google.android.apps.tv.launcherx on newer Google TV), so ask the TV instead of guessing.
@@ -131,6 +140,7 @@ fi
 printf '%s\n' \
   "pm grant com.gathin.tvhome android.permission.ACCESS_FINE_LOCATION 2>/dev/null; echo location-granted" \
   "pm grant com.gathin.tvhome android.permission.READ_EXTERNAL_STORAGE 2>/dev/null; pm grant com.gathin.tvhome android.permission.READ_MEDIA_IMAGES 2>/dev/null; echo usb-granted" \
+  "pm grant com.gathin.tvhome android.permission.WRITE_SECURE_SETTINGS 2>/dev/null; appops set com.gathin.tvhome REQUEST_INSTALL_PACKAGES allow 2>/dev/null; echo update-granted" \
   "cmd package compile -m speed -f com.gathin.tvhome" \
   "$DISABLE_STOCK" \
   "cmd package set-home-activity --user 0 com.gathin.tvhome/.MainActivity" \

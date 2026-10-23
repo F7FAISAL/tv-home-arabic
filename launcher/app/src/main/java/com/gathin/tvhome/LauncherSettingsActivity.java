@@ -37,6 +37,10 @@ public final class LauncherSettingsActivity extends Activity {
     private int rowsBelowDock;
     private boolean animations;
     private boolean advancedEffects;
+    /** «تحديث الأداة»: the newer release found by the last check, and whether a check or download is running. */
+    private AppUpdate.Release update;
+    private boolean updating;
+    private TextView updateStatus;
 
     @Override
     protected void onCreate(Bundle state) {
@@ -138,6 +142,9 @@ public final class LauncherSettingsActivity extends Activity {
         }
         findViewById(R.id.iqamaChoice).setOnClickListener(v -> showIqamaList());
         findViewById(R.id.hiddenAppsChoice).setOnClickListener(v -> showHiddenApps());
+        updateStatus = findViewById(R.id.updateStatus);
+        updateStatus.setText(getString(R.string.update_current, AppUpdater.installedName(this)));
+        findViewById(R.id.updateChoice).setOnClickListener(v -> onUpdate());
         LinearLayout sources = findViewById(R.id.matchSources);
         // Open-Meteo's data is CC BY 4.0: credited here, under the match sources.
         java.util.List<String> lines = new java.util.ArrayList<>(MatchFeed.sourceLines(this, CustomHomeConfig.load(this)));
@@ -152,6 +159,41 @@ public final class LauncherSettingsActivity extends Activity {
         }
         refresh();
         cityChoice.requestFocus();
+    }
+
+    /** First OK: ask GitHub for the latest release. When it is newer, the next OK downloads, verifies and installs it. */
+    private void onUpdate() {
+        if (updating) return;
+        updating = true;
+        String current = AppUpdater.installedName(this);
+        AppUpdate.Release found = update;
+        if (found == null) updateStatus.setText(getString(R.string.update_checking, current));
+        new Thread(() -> {
+            try {
+                if (found == null) {
+                    AppUpdate.Release r = AppUpdater.latest(this);
+                    boolean newer = r.versionCode > AppUpdater.installedCode(this);
+                    runOnUiThread(() -> {
+                        update = newer ? r : null;
+                        updateStatus.setText(getString(newer ? R.string.update_available : R.string.update_up_to_date,
+                                current, r.versionName));
+                    });
+                } else {
+                    java.io.File apk = AppUpdater.download(this, found, p -> runOnUiThread(() ->
+                            updateStatus.setText(getString(R.string.update_downloading, found.versionName, p))));
+                    runOnUiThread(() -> updateStatus.setText(R.string.update_confirm));
+                    AppUpdater.install(this, apk);
+                }
+            } catch (AppUpdater.Failure f) {
+                android.util.Log.w("TvHome.Update", f.getMessage() == null ? "update failed" : f.getMessage());
+                runOnUiThread(() -> {
+                    update = null;
+                    updateStatus.setText(f.message);
+                });
+            } finally {
+                runOnUiThread(() -> updating = false);
+            }
+        }).start();
     }
 
     private void changed() {

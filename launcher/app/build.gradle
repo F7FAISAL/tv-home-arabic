@@ -11,8 +11,26 @@ android {
         applicationId providers.gradleProperty('launcherApplicationId').getOrElse('com.gathin.tvhome')
         minSdk 26
         targetSdk 34
-        versionCode 7
-        versionName '3.0'
+        versionCode 8
+        versionName '3.1'
+    }
+
+    // One release key for every TV, kept outside the repository (CLAUDE.md, "Releases"): the keystore path and its
+    // password come from the environment, which build-and-install.sh and tools/release.sh fill from
+    // ~/.tv-home-arabic/release.jks and the macOS Keychain. Without them (a fresh clone, a contributor) release builds
+    // fall back to the debug key, which installs fine on a new TV but cannot update one signed with the release key.
+    def releaseStore = System.getenv('TVHOME_KEYSTORE')
+    def releasePass = System.getenv('TVHOME_KS_PASS')
+    def releaseKey = releaseStore && releasePass && file(releaseStore).isFile()
+    signingConfigs {
+        release {
+            if (releaseKey) {
+                storeFile file(releaseStore)
+                storePassword releasePass
+                keyAlias System.getenv('TVHOME_KEY_ALIAS') ?: 'tvhome-release'
+                keyPassword releasePass
+            }
+        }
     }
 
     buildTypes {
@@ -21,8 +39,7 @@ android {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            // Sideloaded over ADB, never published: sign with the debug key so it installs over a debug build.
-            signingConfig signingConfigs.debug
+            signingConfig releaseKey ? signingConfigs.release : signingConfigs.debug
         }
     }
 
@@ -32,13 +49,6 @@ android {
             // leaving it out saves about 14 KB of every install.
             excludes += ['kotlin/**', 'META-INF/*.version', 'META-INF/*.kotlin_module', 'DebugProbesKt.bin']
         }
-    }
-
-    sourceSets {
-        // custom_home "font": "thmanyah": your own copy of Thmanyah Sans, packaged unmodified and under its
-        // original file names (launcher/fonts-local/thmanyah/*.otf). Its licence forbids redistribution, so the
-        // folder is gitignored; without it the clean view uses IBM Plex Sans Arabic.
-        main.assets.srcDirs += '../fonts-local'
     }
 
     compileOptions {

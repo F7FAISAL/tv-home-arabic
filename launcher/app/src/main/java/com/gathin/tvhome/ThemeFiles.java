@@ -23,6 +23,11 @@ final class ThemeFiles {
         if (segments.size() == 2 && WALLPAPERS.equals(segments.get(0)) && collectionImage(segments.get(1))) {
             return WALLPAPERS + "/" + segments.get(1);
         }
+        // The owner's Thmanyah Sans (ThemeFonts), by its own two names only.
+        if (segments.size() == 2 && ThemeFonts.DIR.equals(segments.get(0))
+                && java.util.Arrays.asList(ThemeFonts.THMANYAH).contains(segments.get(1))) {
+            return ThemeFonts.DIR + "/" + segments.get(1);
+        }
         return null;
     }
 

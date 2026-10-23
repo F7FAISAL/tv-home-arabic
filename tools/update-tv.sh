@@ -35,6 +35,18 @@ case "$home" in
   *) echo "refusing: Home on $TV_HOST is '$home', not this launcher; a first install follows README.md" >&2; exit 1 ;;
 esac
 
+# The TV must already carry the release key (launcher/release-cert.pem), or Android refuses the update and only an
+# uninstall, which wipes the on-TV choices, would get past it. dumpsys prints the certificate's short hash.
+want="$(python3 -I "$REPO/tools/release_cert.py" --dumpsys)"
+# PackageSignatures{… version:2, signatures:[f551a09d], past signatures:[]}: the first, not the past ones.
+have="$(T 'dumpsys package com.gathin.tvhome' | grep -m1 -o '[^t] signatures:\[[0-9a-f]*\]' | sed 's/.*\[\(.*\)\]/\1/')"
+if [ "$have" != "$want" ]; then
+  echo "refusing: the launcher on $TV_HOST is signed with '$have', the release key is '$want' (tools/release_cert.py)." >&2
+  echo "Updating would need an uninstall, which wipes the choices made on the TV. Ask the owner first." >&2
+  exit 1
+fi
+[ -f "$HOME/.tv-home-arabic/release.jks" ] || { echo "refusing: no release key at ~/.tv-home-arabic/release.jks on this computer" >&2; exit 1; }
+
 # Android switches the accessibility key services off on every reinstall, so both flags go every time.
 STOCK_LAUNCHER=none INPUT_KEY_SERVICE=1 HOME_KEY_SERVICE=1 "$REPO/launcher/build-and-install.sh"
 OVERLAY=()

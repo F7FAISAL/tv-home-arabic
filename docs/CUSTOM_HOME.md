@@ -44,8 +44,10 @@ TV_HOST=<tv ip> tools/theme.sh themes/madinah
   4. Drive (optional): the user's own folder through their read-only Apps Script (`tools/drive-wallpapers/`; the
      link sits in the gitignored `config.local.json`).
   Every downloaded or copied photo is stored as a 1920x1080 JPEG under 500 KB.
-- Font: `"font": "thmanyah"` packages your own Thmanyah Sans from the gitignored `launcher/fonts-local/`
-  (`tools/install-thmanyah.py` puts it there). Its licence forbids redistribution: never commit it.
+- Font: `"font": "thmanyah"` uses your own Thmanyah Sans, which `tools/theme.sh` pushes from the gitignored
+  `launcher/fonts-local/` (`tools/install-thmanyah.py` puts it there) to `files/fonts/` on the TV; `ThemeFonts`
+  reads it there, keeps a copy in internal storage for boots before the card is mounted, and falls back to IBM Plex.
+  Its licence forbids redistribution: it never goes into an APK (releases are public) and is never committed.
 - Weather data: Open-Meteo, CC BY 4.0, credited in launcher settings.
 
 ## Tests

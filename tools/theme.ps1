@@ -76,6 +76,23 @@ if (Test-Path $wallpapers -PathType Container) {
         & $py -I tv.py (Put "wallpapers/$($_.Name)") | Out-Null
     }
 }
+# The owner's Thmanyah Sans (tools\install-thmanyah.py) for a theme with "font": "thmanyah": pushed unmodified to
+# fonts/ on the TV (ThemeFonts), never into the APK; removed otherwise. As theme.sh does.
+$fonts = Join-Path $PSScriptRoot '..\launcher\fonts-local\thmanyah'
+$fontNames = @('thmanyahsans-Regular.otf', 'thmanyahsans-Bold.otf')
+if ((Get-Content $config -Raw -Encoding UTF8 | ConvertFrom-Json).font -eq 'thmanyah') {
+    if (@($fontNames | Where-Object { -not (Test-Path (Join-Path $fonts $_)) }).Count -eq 0) {
+        & $py -I tv.py "mkdir -p $dir/fonts 2>/dev/null" | Out-Null
+        foreach ($f in $fontNames) {
+            & $py -I b64push.py (Join-Path $fonts $f) (Stage "fonts/$f")
+            & $py -I tv.py (Put "fonts/$f") | Out-Null
+        }
+    } else {
+        Write-Warning '"font": "thmanyah" but launcher\fonts-local\thmanyah\ is incomplete (tools\install-thmanyah.py); the TV keeps any copy it has, else IBM Plex'
+    }
+} else {
+    foreach ($f in $fontNames) { & $py -I tv.py (Drop "fonts/$f") | Out-Null }
+}
 & $py -I tv.py "printf '%s' '$revision' > $tmp-theme_revision; $(Put 'theme_revision')" | Out-Null
 & $py -I tv.py "$restart; echo applied"
 Write-Host "Theme $(Split-Path $Theme -Leaf) is on the TV. Undo with: tools\theme.ps1 -TvHost $TvHost -Reset"

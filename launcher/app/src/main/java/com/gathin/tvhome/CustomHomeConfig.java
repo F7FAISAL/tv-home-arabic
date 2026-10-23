@@ -13,7 +13,7 @@ import java.io.File;
  */
 final class CustomHomeConfig {
 
-    /** Fonts the font key may name; anything else is plex. thmanyah needs the local copy (build.gradle, fonts-local). */
+    /** Fonts the font key may name; anything else is plex. thmanyah needs the copy on the TV (ThemeFonts). */
     static final java.util.List<String> FONTS = java.util.Arrays.asList("plex", "outfit", "system", "thmanyah");
 
     /** Choices made on the TV (pill menu), kept apart from theme pushes: they win over the theme until changed. */

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Put your own copy of the Thmanyah font (خط ثمانية) into your build of the launcher.
+"""Put your own copy of the Thmanyah font (خط ثمانية) on your TVs, for the launcher to read.
 
 The font is free to use but its licence forbids redistributing, renaming or modifying it, so it is not in this
 repository. Download it yourself from Thmanyah's official font page (you get a .zip by email), then:
@@ -8,8 +8,9 @@ repository. Download it yourself from Thmanyah's official font page (you get a .
 
 The script takes thmanyahsans-Regular.otf and thmanyahsans-Bold.otf out of the .zip (or a folder) and copies them
 byte for byte, under their own names, into launcher/fonts-local/thmanyah/ (gitignored, never committed). It then
-writes "font": "thmanyah" into the theme's config.local.json (also gitignored). Rebuild and reinstall the launcher
-and push the theme afterwards; without these files the launcher uses IBM Plex Sans Arabic.
+writes "font": "thmanyah" into the theme's config.local.json (also gitignored). tools/theme.sh then pushes the two
+files, unmodified, to each TV it themes; the launcher reads them there and never carries them in its APK (the released
+APK is public). Without them the launcher uses IBM Plex Sans Arabic.
 """
 import json
 import sys
@@ -68,7 +69,7 @@ def main(argv):
     config["font"] = "thmanyah"
     local.write_text(json.dumps(config, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(f'"font": "thmanyah" set in {local.relative_to(ROOT)}')
-    print("Next: rebuild and install the launcher, then push the theme (README.md, step 5).")
+    print("Next: push the theme to each TV (tools/theme.sh, or tools/update-tv.sh tvs/<tv>); no rebuild needed.")
     return 0
 
 

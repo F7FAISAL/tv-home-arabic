@@ -65,6 +65,33 @@ in `backup/<tv>-<date>/`; never run one TV's backup scripts on another.
    tell builds apart. Downgrading needs an uninstall, which wipes the on-TV choices.
 6. Close debugging (step 7 above) and update `tvs/<tv>/TV.md`.
 
+## Releases and «تحديث الأداة»
+
+Launcher settings → «تحديث الأداة» (`AppUpdater`) reads `releases/latest` of this repository (only while it is
+public), downloads `tvhome-<versionName>-<versionCode>.apk`, checks its `.sha256`, checks it is this app, newer and
+signed with the installed certificate, and opens Android's installer. An update keeps all the launcher's data.
+`build-and-install.sh` grants what it needs over adb: `appops REQUEST_INSTALL_PACKAGES allow` and
+`WRITE_SECURE_SETTINGS`, which lets the launcher put the remote's key services back after an update
+(`UpdateReceiver`, `MY_PACKAGE_REPLACED`).
+
+- **The release key** is one key for every TV, kept only on the owner's Mac, never in git:
+  `~/.tv-home-arabic/release.jks` (PKCS12, alias `tvhome-release`, mode 600). Its password is the macOS Keychain
+  item `tv-home-arabic-release`. Read it with `security find-generic-password -s tv-home-arabic-release -w`; never
+  print it, log it or write it to a file. Its public certificate is `launcher/release-cert.pem`;
+  `tools/release_cert.py` prints its SHA-256 and the short hash `dumpsys package` shows (`signatures:[…]`).
+- **Backups:** the owner keeps the key file and its password in **separate** places, never together: e.g. the
+  `.jks` on an offline USB drive (and a second copy elsewhere), the password in a password manager. Losing either
+  one means no TV can be updated in place again (only uninstall + reinstall, which wipes the on-TV choices). If both
+  leak together, anyone could publish an update the TVs accept.
+- `build-and-install.sh` and `tools/release.sh` sign with that key when it's there (`TVHOME_KEYSTORE`,
+  `TVHOME_KS_PASS` for Gradle); without it a build is signed with the debug key and can't update the TVs.
+  `tools/update-tv.sh` refuses a TV whose installed certificate isn't the release certificate.
+- **Publishing:** bump `versionCode` and `versionName` in `launcher/app/build.gradle`, commit and push `main`, then
+  `tools/release.sh` (`--dry-run` first). It refuses a dirty tree, an unpushed `main`, an existing tag, a
+  `versionCode` not above the last release, failing tests, a signer other than the release certificate, and any
+  Thmanyah file in the APK. Then it tags `v<versionName>` and creates the GitHub Release with the APK and its
+  checksum. It needs `gh`, logged in (`gh auth login`; on the owner's Mac `gh` lives in `~/.local/bin`).
+
 ## Thmanyah font (optional)
 
 The default font is IBM Plex Sans Arabic (OFL, bundled). Thmanyah's licence forbids redistributing, renaming or
@@ -72,8 +99,11 @@ modifying the font, so it is never in this repository and you never download it 
 from Thmanyah's official font page (it arrives by email as a .zip), then run
 `python3 tools/install-thmanyah.py <path to the .zip or folder> themes/<theme>`: it copies `thmanyahsans-Regular.otf`
 and `thmanyahsans-Bold.otf` byte for byte into `launcher/fonts-local/thmanyah/` (gitignored) and sets
-`"font": "thmanyah"` in the theme's `config.local.json`. Rebuild, reinstall, push the theme. Never commit,
-convert, subset or rename the files.
+`"font": "thmanyah"` in the theme's `config.local.json`. Then push the theme (`tools/theme.sh` or
+`tools/update-tv.sh`): it sends the two files, unmodified, to the launcher's `files/fonts/` on each TV, where
+`ThemeFonts` reads them (falling back to IBM Plex). No rebuild. The font is never packaged into an APK: releases are
+public, and `tools/release.sh` refuses an APK with a Thmanyah file in it. Never commit, convert, subset or rename the
+files.
 
 ## Wallpapers
 
@@ -93,8 +123,8 @@ All sources rotate together, with no credit line on screen:
 
 Launcher: `launcher/` (Java, minSdk 26). Main classes of the Arabic Home: HomeScene, CustomHomeConfig, PrayerTimes,
 HijriDates, MatchFeed (TheSportsDB free key 123) and EspnFallback, WeatherFeed (Open-Meteo), WallpaperSources,
-RemoteWallpapers, UsbWallpapers, CustomDreamScene, Cities, Clubs (`res/raw/clubs.json`). Remote keys live in
-`launcher/app/src/main/res/values/config.xml`. Tests: `cd launcher && ./gradlew testReleaseUnitTest`, and
+RemoteWallpapers, UsbWallpapers, CustomDreamScene, Cities, Clubs (`res/raw/clubs.json`), ThemeFonts, AppUpdate and
+AppUpdater («تحديث الأداة»). Remote keys live in `launcher/app/src/main/res/values/config.xml`. Tests: `cd launcher && ./gradlew testReleaseUnitTest`, and
 `python3 -m unittest discover -s tests` for the tools.
 
 ## Restore to stock

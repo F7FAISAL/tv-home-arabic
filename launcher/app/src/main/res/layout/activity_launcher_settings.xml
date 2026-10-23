@@ -91,6 +91,22 @@
             android:layout_marginTop="8dp"
             android:text="@string/hidden_apps" />
 
+        <!-- «تحديث الأداة»: OK checks GitHub releases; when a newer one is there, OK again downloads, verifies and
+             installs it (AppUpdater). The line under it says the versions and the progress. -->
+        <TextView
+            android:id="@+id/updateChoice"
+            style="@style/SettingsRow"
+            android:layout_marginTop="8dp"
+            android:text="@string/update_title" />
+
+        <TextView
+            android:id="@+id/updateStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textColor="#CCFFFFFF"
+            android:textSize="15sp" />
+
         <!-- Read-only: each chosen club's match source and last update (MatchFeed.sourceLines). -->
         <LinearLayout
             android:id="@+id/matchSources"

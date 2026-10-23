@@ -104,6 +104,24 @@ if [ -d "$WALLS" ]; then
     esac
   done
 fi
+# The owner's Thmanyah Sans (tools/install-thmanyah.py) for a theme with "font": "thmanyah": the two files go to
+# fonts/ on the TV unmodified and under their own names (ThemeFonts), never into the APK. Otherwise they are removed.
+FONTS="$(pwd)/../launcher/fonts-local/thmanyah"
+FONT_NAMES="thmanyahsans-Regular.otf thmanyahsans-Bold.otf"
+if "$PY" -I -c 'import json,sys; sys.exit(0 if json.load(open(sys.argv[1])).get("font") == "thmanyah" else 1)' "$PUSH_CONFIG"; then
+  have=1; for F in $FONT_NAMES; do [ -f "$FONTS/$F" ] || have=0; done
+  if [ "$have" = 1 ]; then
+    tv "mkdir -p $DIR/fonts 2>/dev/null" >/dev/null || true
+    for F in $FONT_NAMES; do
+      "$PY" -I b64push.py "$FONTS/$F" "$(stage "fonts/$F")"
+      tv "$(put "fonts/$F")" >/dev/null
+    done
+  else
+    echo "note: \"font\": \"thmanyah\" but launcher/fonts-local/thmanyah/ is incomplete (tools/install-thmanyah.py); the TV keeps any copy it has, else IBM Plex" >&2
+  fi
+else
+  for F in $FONT_NAMES; do tv "$(del "fonts/$F")" >/dev/null; done
+fi
 tv "printf '%s' '$REVISION' > $TMP-theme_revision; $(put theme_revision)" >/dev/null
 tv "$RESTART; $REBIND; echo applied" | grep -E '^(applied|WARNING)'
 echo "Theme $(basename "$THEME") is on the TV. Undo with: tools/theme.sh --reset"
