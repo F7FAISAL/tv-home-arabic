@@ -54,6 +54,8 @@ final class AppUpdater {
     static final String APK_FILE = "update.apk";
     private static final String PREFS = "app_update";
     private static final String KEY_SERVICES = "a11y_services";
+    /** How long, after an update, Home waits for its key service to bind before bringing itself back anyway. */
+    static final long BIND_WAIT_MS = 10_000L;
 
     private AppUpdater() {
     }
@@ -204,6 +206,53 @@ final class AppUpdater {
         }
         ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().remove(KEY_SERVICES).apply();
         new File(ctx.getCacheDir(), APK_FILE).delete();
+    }
+
+    /**
+     * After this launcher was replaced (MY_PACKAGE_REPLACED, in the new version): bring Home back. Replacing itself,
+     * the launcher's process and tasks go, Home's included, and Android brings forward the most recent other task
+     * instead (on the G10 on 2026-10-24: a Netflix left in the background from earlier). Android lets an app start an
+     * activity from the background while the system has one of its accessibility services bound, so this waits until
+     * a key service of ours is bound again (BIND_WAIT_MS at most), then starts Home once. Lives in the new version so
+     * it works whatever version did the install.
+     */
+    static void returnHomeWhenBound(Context ctx) {
+        android.view.accessibility.AccessibilityManager am =
+                (android.view.accessibility.AccessibilityManager) ctx.getSystemService(Context.ACCESSIBILITY_SERVICE);
+        long until = System.currentTimeMillis() + BIND_WAIT_MS;
+        while (am != null && keyServicesListed(ctx) && System.currentTimeMillis() < until) {
+            java.util.List<String> ids = new java.util.ArrayList<>();
+            for (android.accessibilityservice.AccessibilityServiceInfo i : am.getEnabledAccessibilityServiceList(
+                    android.accessibilityservice.AccessibilityServiceInfo.FEEDBACK_ALL_MASK)) ids.add(i.getId());
+            if (oursBound(ids, ctx.getPackageName())) break;
+            try {
+                Thread.sleep(250);
+            } catch (InterruptedException e) {
+                return;
+            }
+        }
+        goHome(ctx);
+    }
+
+    /** True when one of the running accessibility services ("pkg/.Class" ids) is this app's. */
+    static boolean oursBound(java.util.List<String> runningIds, String pkg) {
+        for (String id : runningIds) if (id != null && id.startsWith(pkg + "/")) return true;
+        return false;
+    }
+
+    static void goHome(Context ctx) {
+        try {
+            ctx.startActivity(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME)
+                    .setPackage(ctx.getPackageName()).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+        } catch (RuntimeException e) {
+            android.util.Log.w("TvHome.Update", "Home not brought back after the update: " + e);
+        }
+    }
+
+    /** True when this app's key services are listed as enabled (they will bind again after the update). */
+    static boolean keyServicesListed(Context ctx) {
+        String enabled = Settings.Secure.getString(ctx.getContentResolver(), Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
+        return enabled != null && enabled.contains(ctx.getPackageName() + "/");
     }
 
     private static PackageInfo installed(Context ctx, int flags) {

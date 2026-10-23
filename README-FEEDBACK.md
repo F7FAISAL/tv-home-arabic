@@ -102,3 +102,10 @@ com.gathin.tvhome. This test upgrades it in place from this repository by follow
    message, before building anything. Found when `tools/update-tv.sh` was first run without `JAVA_HOME`.
    **Fixed:** it also looks in `~/Library/Java/*` and `/Library/Java/JavaVirtualMachines/*` for a 17, and prints an
    ERROR when no JDK 17 is found.
+4. **Another app came forward after «تحديث الأداة» (3.0 → 3.1).** Right after the install, Netflix appeared by
+   itself. The log shows no key press and no `START`: Android force-stopped the launcher to replace it
+   (`installPackageLI`), which removes its tasks, Home's included, and then resumed the most recent other task, a
+   Netflix left in the background from the button test (`Moving to RESUMED … (in existing)`). Home only came back
+   when the Home button was pressed 11 s later. **Fixed in 3.2:** the new version's `MY_PACKAGE_REPLACED` receiver
+   waits for one of its key services to be bound again (which lets it start an activity from the background) and
+   brings Home back. Checked on the G10: Netflix in front, `pm install -r`, Home back after 1.5 s.

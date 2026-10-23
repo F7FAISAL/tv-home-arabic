@@ -10,7 +10,8 @@ import android.widget.Toast;
 /**
  * «تحديث الأداة»'s two callbacks. From Android's installer (AppUpdater.install): shows its confirmation, or says why it
  * stopped. MY_PACKAGE_REPLACED, after any update of this app: puts the remote's key services back if Android dropped
- * them (AppUpdater.restoreKeyServices).
+ * them (AppUpdater.restoreKeyServices), then brings Home back over whatever task Android brought forward
+ * (AppUpdater.returnHomeWhenBound).
  */
 public final class UpdateReceiver extends BroadcastReceiver {
 
@@ -20,7 +21,9 @@ public final class UpdateReceiver extends BroadcastReceiver {
             PendingResult done = goAsync();
             new Thread(() -> {
                 try {
-                    AppUpdater.restoreKeyServices(ctx.getApplicationContext());
+                    Context app = ctx.getApplicationContext();
+                    AppUpdater.restoreKeyServices(app);
+                    AppUpdater.returnHomeWhenBound(app);
                 } finally {
                     done.finish();
                 }

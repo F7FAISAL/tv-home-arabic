@@ -69,4 +69,18 @@ public class AppUpdateTest {
             f.delete();
         }
     }
+
+    @Test
+    public void homeWaitsForOneOfItsOwnKeyServicesToBeBound() {
+        String pkg = "com.gathin.tvhome";
+        // AccessibilityServiceInfo.getId() of the running services, as the G10 has them after an update.
+        org.junit.Assert.assertTrue(AppUpdater.oursBound(java.util.Arrays.asList(
+                "com.google.android.marvin.talkback/.TalkBackService", "com.gathin.tvhome/.InputKeyService"), pkg));
+        org.junit.Assert.assertTrue(AppUpdater.oursBound(java.util.Arrays.asList("com.gathin.tvhome/.HomeKeyService"), pkg));
+        // Not yet rebound, someone else's, or a package whose name only starts like ours.
+        org.junit.Assert.assertFalse(AppUpdater.oursBound(java.util.Collections.emptyList(), pkg));
+        org.junit.Assert.assertFalse(AppUpdater.oursBound(java.util.Arrays.asList("com.netflix.ninja/.Svc"), pkg));
+        org.junit.Assert.assertFalse(AppUpdater.oursBound(java.util.Arrays.asList("com.gathin.tvhome2/.InputKeyService"), pkg));
+        org.junit.Assert.assertFalse(AppUpdater.oursBound(java.util.Arrays.asList((String) null), pkg));
+    }
 }
