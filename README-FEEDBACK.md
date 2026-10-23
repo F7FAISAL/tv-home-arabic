@@ -109,3 +109,8 @@ com.gathin.tvhome. This test upgrades it in place from this repository by follow
    when the Home button was pressed 11 s later. **Fixed in 3.2:** the new version's `MY_PACKAGE_REPLACED` receiver
    waits for one of its key services to be bound again (which lets it start an activity from the background) and
    brings Home back. Checked on the G10: Netflix in front, `pm install -r`, Home back after 1.5 s.
+   **Not enough in a real in-app update (3.2):** Netflix showed for 3.3 s (01:25:34.88 → Home 01:25:38.14), because
+   3.2 first switched the key services off and on (1.5 s pause) before waiting for them; the ADB test hid that. An app
+   cannot remove another app's task, and killing its process only makes Android cold-start it in the same place.
+   **3.3** waits up to 2 s for the key service to rebind by itself and brings Home back at once, switching the
+   services off and on only when they don't come back.

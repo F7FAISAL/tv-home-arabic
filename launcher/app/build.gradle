@@ -11,8 +11,8 @@ android {
         applicationId providers.gradleProperty('launcherApplicationId').getOrElse('com.gathin.tvhome')
         minSdk 26
         targetSdk 34
-        versionCode 9
-        versionName '3.2'
+        versionCode 10
+        versionName '3.3'
     }
 
     // One release key for every TV, kept outside the repository (CLAUDE.md, "Releases"): the keystore path and its

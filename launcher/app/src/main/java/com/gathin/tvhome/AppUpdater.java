@@ -54,8 +54,8 @@ final class AppUpdater {
     static final String APK_FILE = "update.apk";
     private static final String PREFS = "app_update";
     private static final String KEY_SERVICES = "a11y_services";
-    /** How long, after an update, Home waits for its key service to bind before bringing itself back anyway. */
-    static final long BIND_WAIT_MS = 10_000L;
+    /** After an update: how long the key services get to rebind by themselves, then after being switched off and on. */
+    static final long FIRST_BIND_MS = 2_000L, BIND_WAIT_MS = 8_000L;
 
     private AppUpdater() {
     }
@@ -204,34 +204,46 @@ final class AppUpdater {
         } catch (SecurityException | InterruptedException e) {
             android.util.Log.w("TvHome.Update", "key services not restored: " + e);
         }
+    }
+
+    /**
+     * After this launcher was replaced (MY_PACKAGE_REPLACED, in the new version). Replacing itself, the launcher's
+     * process and tasks go, Home's included, and Android brings forward the most recent other task (on the G10 on
+     * 2026-10-24: a Netflix left in the background). An app can't remove another app's task, and killing its process
+     * only makes Android cold-start it there, so Home brings itself back, as fast as Android allows: an app may start
+     * an activity from the background once the system has bound one of its accessibility services again. Usually it
+     * rebinds by itself within a second or two (Android 12); where it doesn't (some Android 11 TCL builds), the
+     * services are switched off and on again (restoreKeyServices) first. Lives in the new version, so it works
+     * whatever version did the install. 3.2 always switched them off and on first, and Netflix stayed 3.3 s.
+     */
+    static void afterUpdate(Context ctx) {
+        if (keyServicesListed(ctx) && !waitBound(ctx, FIRST_BIND_MS)) {
+            restoreKeyServices(ctx);
+            waitBound(ctx, BIND_WAIT_MS);
+        }
+        goHome(ctx);
         ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().remove(KEY_SERVICES).apply();
         new File(ctx.getCacheDir(), APK_FILE).delete();
     }
 
-    /**
-     * After this launcher was replaced (MY_PACKAGE_REPLACED, in the new version): bring Home back. Replacing itself,
-     * the launcher's process and tasks go, Home's included, and Android brings forward the most recent other task
-     * instead (on the G10 on 2026-10-24: a Netflix left in the background from earlier). Android lets an app start an
-     * activity from the background while the system has one of its accessibility services bound, so this waits until
-     * a key service of ours is bound again (BIND_WAIT_MS at most), then starts Home once. Lives in the new version so
-     * it works whatever version did the install.
-     */
-    static void returnHomeWhenBound(Context ctx) {
+    /** Waits up to {@code ms} for one of this app's key services to be bound; true when one is. */
+    static boolean waitBound(Context ctx, long ms) {
         android.view.accessibility.AccessibilityManager am =
                 (android.view.accessibility.AccessibilityManager) ctx.getSystemService(Context.ACCESSIBILITY_SERVICE);
-        long until = System.currentTimeMillis() + BIND_WAIT_MS;
-        while (am != null && keyServicesListed(ctx) && System.currentTimeMillis() < until) {
+        if (am == null) return false;
+        long until = System.currentTimeMillis() + ms;
+        while (true) {
             java.util.List<String> ids = new java.util.ArrayList<>();
             for (android.accessibilityservice.AccessibilityServiceInfo i : am.getEnabledAccessibilityServiceList(
                     android.accessibilityservice.AccessibilityServiceInfo.FEEDBACK_ALL_MASK)) ids.add(i.getId());
-            if (oursBound(ids, ctx.getPackageName())) break;
+            if (oursBound(ids, ctx.getPackageName())) return true;
+            if (System.currentTimeMillis() >= until) return false;
             try {
-                Thread.sleep(250);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
-                return;
+                return false;
             }
         }
-        goHome(ctx);
     }
 
     /** True when one of the running accessibility services ("pkg/.Class" ids) is this app's. */
