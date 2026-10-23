@@ -69,7 +69,7 @@ echo "Checks..."
 WANT="$(python3 -I tools/release_cert.py --sha256)"
 GOT="$("$APKSIGNER" verify --print-certs "$OUT/$FILE" | sed -n 's/^Signer #1 certificate SHA-256 digest: //p')"
 [ "$GOT" = "$WANT" ] || die "signed with $GOT, not the release key $WANT"
-[ "$("$APKSIGNER" verify --print-certs "$OUT/$FILE" | grep -c '^Signer #')" = 1 ] || die "more than one signer"
+[ "$("$APKSIGNER" verify --print-certs "$OUT/$FILE" | grep -c '^Signer #[0-9]* certificate DN:')" = 1 ] || die "not exactly one signer"
 if unzip -l "$OUT/$FILE" | grep -qi 'thmanyah'; then die "the APK contains a Thmanyah file; it must never be published"; fi
 BADGE="$("$AAPT2" dump badging "$OUT/$FILE" | head -n 1)"
 case "$BADGE" in *"name='com.gathin.tvhome'"*"versionCode='$CODE'"*"versionName='$NAME'"*) ;; *) die "unexpected package line: $BADGE" ;; esac
