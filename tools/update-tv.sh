@@ -5,7 +5,7 @@
 #   tools/update-tv.sh tvs/<tv>                  # TV_HOST from tvs/<tv>/tv.env
 #   TV_HOST=192.168.1.50 tools/update-tv.sh tvs/<tv>
 #
-# tvs/ is gitignored, one folder per TV (see CLAUDE.md):
+# tvs/ is gitignored, one folder per TV (see AGENTS.md):
 #   tv.env             DEVICE=<getprop ro.product.device>   the model guard: any other TV is refused
 #                      TV_HOST=<ip>                          default address (DHCP: check Settings -> Network)
 #                      THEME=themes/madinah                  the theme to push

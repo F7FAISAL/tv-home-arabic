@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Fingerprints of the launcher's release certificate (launcher/release-cert.pem, public; the key itself stays in
-~/.tv-home-arabic/release.jks, see CLAUDE.md).
+~/.tv-home-arabic/release.jks, see AGENTS.md).
 
     python3 tools/release_cert.py            # sha256 and the short hash dumpsys package prints
     python3 tools/release_cert.py --sha256   # only the SHA-256 (what apksigner --print-certs shows)

@@ -9,14 +9,14 @@
 # new and versionCode beats the latest release; both test suites pass; the APK is signed with the release key
 # (launcher/release-cert.pem) and carries no Thmanyah file (its licence forbids redistribution; the TVs read it
 # from their own storage, ThemeFonts). The release key: ~/.tv-home-arabic/release.jks, password in the Keychain
-# item tv-home-arabic-release (CLAUDE.md, "Releases").
+# item tv-home-arabic-release (AGENTS.md, "Releases").
 set -euo pipefail
 REPO="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$REPO"
 DRY=0; [ "${1:-}" = --dry-run ] && DRY=1
 die() { echo "release: $*" >&2; exit 1; }
 
-command -v gh >/dev/null || die "gh is not installed (CLAUDE.md, Releases)"
+command -v gh >/dev/null || die "gh is not installed (AGENTS.md, Releases)"
 gh auth status >/dev/null 2>&1 || die "gh is not logged in: run gh auth login"
 [ -z "$(git status --porcelain)" ] || die "the working tree is not clean"
 [ "$(git rev-parse --abbrev-ref HEAD)" = main ] || die "not on main"
