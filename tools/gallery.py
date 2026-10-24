@@ -7,8 +7,12 @@ deletes the ones that left the list. No key, no account: the files are public in
 
   python3 tools/gallery.py add ~/Pictures/photo.jpg [more.jpg ...]   # resize into wallpapers/, update the list
   python3 tools/gallery.py index                                     # rebuild wallpapers.json from wallpapers/
+  python3 tools/gallery.py normalize                                 # convert photos dropped into wallpapers/
 
-Then commit and push wallpapers/ and wallpapers.json. Photos are cropped to 1920x1080, saved as JPEG under
+Then commit and push wallpapers/ and wallpapers.json. normalize is what the Wallpapers workflow
+(.github/workflows/wallpapers.yml) runs after a photo is uploaded to wallpapers/ on GitHub: every file that is
+not already a clean 1920x1080 JPEG under 500 KB is converted, numbered and the original removed; photos that
+are already clean stay byte for byte, so TVs don't download them again. Photos are cropped to 1920x1080, saved as JPEG under
 500 KB, and stripped of all metadata (camera, GPS, author fields). Needs Pillow:
 tools/venv/bin/pip install Pillow
 """
@@ -23,6 +27,17 @@ FOLDER = ROOT / "wallpapers"
 INDEX = ROOT / "wallpapers.json"
 WIDTH, HEIGHT, MAX_BYTES = 1920, 1080, 500 * 1024
 NAME = re.compile(r"^[A-Za-z0-9_.-]+\.jpg$")
+# Markers a JPEG saved by resize() carries; anything else (EXIF, ICC, XMP, comments) came from a camera or editor.
+CLEAN_MARKERS = {"APP0"}
+
+
+def open_heif():
+    """iPhone photos (HEIC) open only with pillow-heif; without it they are reported as unreadable."""
+    try:
+        from pillow_heif import register_heif_opener
+    except ImportError:
+        return
+    register_heif_opener()
 
 
 def resize(src: Path, out: Path) -> int:
@@ -39,6 +54,42 @@ def resize(src: Path, out: Path) -> int:
             if out.stat().st_size <= MAX_BYTES:
                 return quality
     raise SystemExit(f"{src}: could not get it under 500 KB")
+
+
+def is_clean(p: Path) -> bool:
+    """A photo the TVs can take as it is: a .jpg name index() accepts, 1920x1080 JPEG, under 500 KB, no metadata."""
+    from PIL import Image
+
+    if not NAME.match(p.name) or p.stat().st_size > MAX_BYTES:
+        return False
+    try:
+        with Image.open(p) as im:
+            markers = {marker for marker, _ in getattr(im, "applist", [])}
+            return (im.format == "JPEG" and im.size == (WIDTH, HEIGHT) and markers <= CLEAN_MARKERS
+                    and "comment" not in im.info)
+    except OSError:
+        return False
+
+
+def normalize() -> list:
+    """Converts every photo in wallpapers/ that is not clean, under the next free number; returns (old, new) names."""
+    open_heif()
+    done = []
+    for p in sorted(FOLDER.glob("*")):
+        if not p.is_file() or p.name.startswith(".") or is_clean(p):
+            continue
+        tmp = FOLDER / ".normalize.jpg"
+        try:
+            resize(p, tmp)
+        except OSError as e:
+            tmp.unlink(missing_ok=True)
+            raise SystemExit(f"wallpapers/{p.name}: not a photo this tool can read ({e})")
+        p.unlink()
+        out = FOLDER / next_name()
+        tmp.rename(out)
+        print(f"wallpapers/{p.name} -> wallpapers/{out.name} ({out.stat().st_size // 1024} KB)")
+        done.append((p.name, out.name))
+    return done
 
 
 def next_name() -> str:
@@ -74,6 +125,10 @@ def main(argv):
             print(f"{arg} -> wallpapers/{out.name} ({out.stat().st_size // 1024} KB, quality {q})")
         index()
     elif argv == ["index"]:
+        index()
+    elif argv == ["normalize"]:
+        FOLDER.mkdir(exist_ok=True)
+        normalize()
         index()
     else:
         print(__doc__)

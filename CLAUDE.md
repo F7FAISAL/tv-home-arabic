@@ -113,7 +113,10 @@ All sources rotate together, with no credit line on screen:
 - Online gallery: `wallpapers.json` + `wallpapers/` fetched from raw.githubusercontent.com
   (`wallpaper_gallery_url`; it must point at this repository's `main`). `tools/gallery.py add <photos>` crops to
   1920x1080, keeps it under 500 KB, strips metadata and rebuilds the list; commit and push and every TV picks it up
-  within six hours. Only add photos the user has the right to publish.
+  within six hours. Photos uploaded straight to `wallpapers/` on GitHub (website) are converted the same way by the
+  Wallpapers workflow (`.github/workflows/wallpapers.yml`, `tools/gallery.py normalize`), which commits the result;
+  clean photos stay byte for byte. Originals stay in the public history, so remove location data before uploading.
+  Only add photos the user has the right to publish.
 - USB: a `TVWallpapers` folder at the top of any USB drive; needs the storage permission that
   `build-and-install.sh` grants.
 - Drive (optional): the user's own folder and Apps Script, `tools/drive-wallpapers/README.md`; the `/exec` link goes

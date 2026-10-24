@@ -1,0 +1,45 @@
+name: Wallpapers
+
+# Photos uploaded to wallpapers/ from the GitHub website or app are made ready for the TVs here: cropped to
+# 1920x1080, saved as JPEG under 500 KB with no metadata, numbered, and listed in wallpapers.json
+# (tools/gallery.py normalize). Every TV picks the new list up within six hours. Photos already in the folder stay
+# byte for byte. The commit this job pushes uses GITHUB_TOKEN, so it does not start this workflow again.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "wallpapers/**"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: wallpapers
+  cancel-in-progress: false
+
+jobs:
+  normalize:
+    name: Resize photos and rebuild wallpapers.json
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Pillow (and HEIC support for iPhone photos)
+        run: pip install -q Pillow==11.1.0 pillow-heif==0.21.0
+      - name: Resize, strip metadata, number and list
+        run: python3 tools/gallery.py normalize
+      - name: Commit and push
+        run: |
+          git add -A wallpapers wallpapers.json
+          if git diff --cached --quiet; then
+            echo "Nothing to change: every photo was already ready and wallpapers.json is up to date."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Wallpapers: resize uploaded photos and rebuild wallpapers.json"
+          git pull --rebase origin main
+          git push origin HEAD:main
